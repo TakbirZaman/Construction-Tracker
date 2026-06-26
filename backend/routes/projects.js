@@ -1,6 +1,7 @@
 import express from 'express';
 import { getAllProjects, getProjectById, createProject, updateProject, deleteProject, getProjectStats } from '../controllers/projectsController.js';
 import { authenticate, requireAdmin, requireManagerOrAdmin } from '../middleware/auth.js';
+import { validateId } from '../middleware/validate.js';
 import tasksRouter from './tasks.js';
 import materialsRouter from './materials.js';
 import budgetRouter from './budget.js';
@@ -11,10 +12,10 @@ router.use(authenticate);
 
 router.get('/stats', getProjectStats);
 router.get('/', getAllProjects);
-router.get('/:id', getProjectById);
+router.get('/:id', validateId, getProjectById);
 router.post('/', requireManagerOrAdmin, createProject);
-router.put('/:id', requireManagerOrAdmin, updateProject);
-router.delete('/:id', requireAdmin, deleteProject);
+router.put('/:id', validateId, requireManagerOrAdmin, updateProject);
+router.delete('/:id', validateId, requireAdmin, deleteProject);
 
 // Nested routes
 router.use('/:projectId/tasks', tasksRouter);

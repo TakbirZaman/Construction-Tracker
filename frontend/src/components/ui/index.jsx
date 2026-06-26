@@ -78,7 +78,7 @@ export const ConfirmDialog = ({ open, onClose, onConfirm, title, message, danger
 );
 
 // ─── Alert ────────────────────────────────────────────────────────────────────
-export const Alert = ({ type = 'info', message, onClose }) => {
+export const Alert = ({ type = 'info', message, onClose, className = '' }) => {
   const cfg = {
     info: 'bg-blue-500/10 border-blue-500/30 text-blue-400',
     success: 'bg-green-500/10 border-green-500/30 text-green-400',
@@ -86,7 +86,7 @@ export const Alert = ({ type = 'info', message, onClose }) => {
     warning: 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400',
   };
   return (
-    <div className={`flex items-center justify-between gap-3 px-4 py-3 rounded-lg border text-sm ${cfg[type]} animate-fade-in`}>
+    <div className={`flex items-center justify-between gap-3 px-4 py-3 rounded-lg border text-sm ${cfg[type]} animate-fade-in ${className}`}>
       <span>{message}</span>
       {onClose && <button onClick={onClose} className="opacity-60 hover:opacity-100">✕</button>}
     </div>

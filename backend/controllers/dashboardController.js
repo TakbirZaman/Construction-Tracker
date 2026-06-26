@@ -16,11 +16,13 @@ export const getDashboardStats = async (req, res, next) => {
         COALESCE(SUM(budget), 0) as total_budget
       FROM projects
     `;
+    const projectParams = [];
     if (isManager) {
-      projectQuery += ` WHERE manager_id = ${req.user.id} OR created_by = ${req.user.id}`;
+      projectQuery += ` WHERE (manager_id = $1 OR created_by = $2)`;
+      projectParams.push(req.user.id, req.user.id);
     }
 
-    const { rows: projects } = await pool.query(projectQuery);
+    const { rows: projects } = await pool.query(projectQuery, projectParams);
 
     // Task stats
     let taskQuery = `
@@ -32,11 +34,13 @@ export const getDashboardStats = async (req, res, next) => {
         COUNT(CASE WHEN status = 'blocked' THEN 1 END) as blocked
       FROM tasks
     `;
+    const taskParams = [];
     if (req.user.role === 'worker') {
-      taskQuery += ` WHERE assigned_to = ${req.user.id}`;
+      taskQuery += ` WHERE assigned_to = $1`;
+      taskParams.push(req.user.id);
     }
 
-    const { rows: tasks } = await pool.query(taskQuery);
+    const { rows: tasks } = await pool.query(taskQuery, taskParams);
 
     // Budget overview
     const { rows: budget } = await pool.query(`

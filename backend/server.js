@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 import dotenv from 'dotenv';
@@ -61,6 +63,20 @@ const heartbeat = setInterval(() => {
   });
 }, 30000);
 
+// Handle server shutdown gracefully
+const shutdown = () => {
+  console.log('\n🛑 Shutting down gracefully...');
+  clearInterval(heartbeat);
+  wss.close(() => {
+    console.log('🔌 WebSocket server closed');
+    process.exit(0);
+  });
+  setTimeout(() => process.exit(1), 10000);
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+
 wss.on('close', () => clearInterval(heartbeat));
 
 // Broadcast utility
@@ -70,6 +86,28 @@ export const broadcast = (event, data) => {
     if (client.readyState === 1) client.send(message);
   });
 };
+
+// ─── Security Middleware ──────────────────────────────────────────────────────
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: false,
+}));
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later' },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many login attempts, please try again later' },
+});
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(cors({
@@ -83,6 +121,10 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(logger);
+
+// Rate limiting
+app.use('/api/auth', authLimiter);
+app.use('/api', apiLimiter);
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);

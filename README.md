@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🏗️ ConstructTrack Pro — Enterprise Construction ERP
 
 A full-stack Construction & Real Estate Project Management ERP system inspired by Procore/Buildertrend.
@@ -213,3 +214,6 @@ tasks → users (assigned_to)
 ```
 
 All computations (budget variance, progress %, stock alerts) are calculated in **PostgreSQL** — not the frontend.
+=======
+# NNSEL Construction Tracker 
+>>>>>>> dab4cbb524ed25b236e558fc4449b3e8361a0391

@@ -10,4 +10,18 @@ export default defineConfig({
       '/ws': { target: 'ws://localhost:5000', ws: true },
     },
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          charts: ['recharts'],
+          ui: ['axios'],
+        },
+      },
+    },
+  },
 });
