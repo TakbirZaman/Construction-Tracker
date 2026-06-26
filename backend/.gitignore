@@ -1,0 +1,39 @@
+# ===========================
+# Dependencies - NEVER commit
+# ===========================
+node_modules/
+**/node_modules/
+
+# ===========================
+# Environment Variables - SECRET
+# ===========================
+.env
+.env.local
+.env.production
+.env.*.local
+**/.env
+
+# ===========================
+# Build Output
+# ===========================
+frontend/dist/
+frontend/build/
+
+# ===========================
+# Logs
+# ===========================
+*.log
+npm-debug.log*
+logs/
+
+# ===========================
+# OS Files
+# ===========================
+.DS_Store
+Thumbs.db
+
+# ===========================
+# Editor
+# ===========================
+.vscode/
+.idea/

@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { scrollbar-width: thin; scrollbar-color: #334155 transparent; }
+  *::-webkit-scrollbar { width: 5px; height: 5px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  body { font-family: 'Sora', sans-serif; background: #0b1120; }
+}
+
+@layer components {
+  .card { @apply bg-slate-900 border border-slate-800 rounded-xl; }
+  .card-hover { @apply card hover:border-slate-700 transition-all duration-200; }
+  .btn-primary { @apply bg-brand-500 hover:bg-brand-600 text-white font-medium px-4 py-2 rounded-lg transition-all duration-150 flex items-center gap-2 text-sm; }
+  .btn-secondary { @apply bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium px-4 py-2 rounded-lg transition-all duration-150 flex items-center gap-2 text-sm; }
+  .btn-danger { @apply bg-red-900/50 hover:bg-red-900 text-red-400 hover:text-red-300 font-medium px-4 py-2 rounded-lg transition-all duration-150 flex items-center gap-2 text-sm border border-red-900/50; }
+  .input { @apply bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50 transition-all w-full; }
+  .select { @apply bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50 transition-all w-full; }
+  .label { @apply text-xs font-medium text-slate-400 uppercase tracking-wider mb-1 block; }
+  .badge { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium; }
+  .stat-card { @apply card p-5 flex flex-col gap-2; }
+  .table-row { @apply border-b border-slate-800 hover:bg-slate-800/50 transition-colors; }
+}
