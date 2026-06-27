@@ -174,18 +174,23 @@ app.use(errorHandler);
 // ─── Startup ──────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 
-async function start() {
+async function tryMigrations() {
   try {
     await runMigrations();
-    server.listen(PORT, () => {
-      console.log(`\n🚀 ConstructTrack API running on http://localhost:${PORT}`);
-      console.log(`🔌 WebSocket server ready`);
-      console.log(`📊 Dashboard: http://localhost:${PORT}/api/health\n`);
-    });
+    console.log(`📊 Health check: http://localhost:${PORT}/api/health\n`);
   } catch (err) {
-    console.error('❌ Failed to start server:', err.message);
-    process.exit(1);
+    console.error('⚠️ Database migration failed:', err.message);
+    console.error('⚠️ Will retry in 15 seconds...');
+    setTimeout(tryMigrations, 15000);
   }
+}
+
+async function start() {
+  server.listen(PORT, () => {
+    console.log(`\n🚀 ConstructTrack starting on http://localhost:${PORT}`);
+    console.log(`🔌 WebSocket server ready`);
+  });
+  tryMigrations();
 }
 
 start();
