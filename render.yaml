@@ -23,4 +23,6 @@ databases:
     region: singapore
     plan: free
     databaseName: constructtrack
-    ipAllowList: []
+    ipAllowList:
+      - name: allow-all
+        cidr: 0.0.0.0/0
