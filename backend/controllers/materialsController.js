@@ -1,8 +1,8 @@
-import { pool } from '../db/index.js';
+import { queryWithRetry } from '../db/index.js';
 
 export const getMaterialsByProject = async (req, res, next) => {
   try {
-    const { rows } = await pool.query(`
+    const { rows } = await queryWithRetry(`
       SELECT *,
         (quantity_ordered - quantity_used) as quantity_remaining,
         CASE WHEN quantity_ordered > 0
@@ -25,7 +25,7 @@ export const getMaterialsByProject = async (req, res, next) => {
 
 export const getMaterialById = async (req, res, next) => {
   try {
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `SELECT *,
         (quantity_ordered - quantity_used) as quantity_remaining,
         CASE WHEN quantity_ordered > 0
@@ -46,7 +46,7 @@ export const createMaterial = async (req, res, next) => {
     const { name, unit = 'units', quantity_ordered = 0, quantity_used = 0, unit_cost = 0, supplier, notes } = req.body;
     if (!name) return res.status(400).json({ error: 'Material name is required' });
 
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `INSERT INTO materials (project_id, name, unit, quantity_ordered, quantity_used, unit_cost, supplier, notes)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
       [req.params.projectId, name, unit, quantity_ordered, quantity_used, unit_cost, supplier, notes]
@@ -58,7 +58,7 @@ export const createMaterial = async (req, res, next) => {
 export const updateMaterial = async (req, res, next) => {
   try {
     const { name, unit, quantity_ordered, quantity_used, unit_cost, supplier, notes } = req.body;
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `UPDATE materials SET
         name = COALESCE($1, name),
         unit = COALESCE($2, unit),
@@ -78,7 +78,7 @@ export const updateMaterial = async (req, res, next) => {
 
 export const deleteMaterial = async (req, res, next) => {
   try {
-    const { rows } = await pool.query('DELETE FROM materials WHERE id = $1 RETURNING id', [req.params.id]);
+    const { rows } = await queryWithRetry('DELETE FROM materials WHERE id = $1 RETURNING id', [req.params.id]);
     if (!rows[0]) return res.status(404).json({ error: 'Material not found' });
     res.json({ message: 'Material deleted successfully' });
   } catch (err) { next(err); }
@@ -86,7 +86,7 @@ export const deleteMaterial = async (req, res, next) => {
 
 export const getMaterialSummary = async (req, res, next) => {
   try {
-    const { rows } = await pool.query(`
+    const { rows } = await queryWithRetry(`
       SELECT
         COUNT(*) as total_materials,
         COALESCE(SUM(quantity_ordered * unit_cost), 0) as total_material_value,

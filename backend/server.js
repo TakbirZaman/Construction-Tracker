@@ -9,7 +9,7 @@ import { WebSocketServer } from 'ws';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
-import { runMigrations } from './db/index.js';
+import { runMigrations, testConnection } from './db/index.js';
 import { logger, errorHandler, notFound } from './middleware/middleware.js';
 
 import authRoutes from './routes/auth.js';
@@ -120,9 +120,14 @@ const corsOrigins = [
 if (process.env.CORS_ORIGIN) {
   corsOrigins.push(process.env.CORS_ORIGIN);
 }
+if (process.env.RENDER_EXTERNAL_URL) {
+  corsOrigins.push(process.env.RENDER_EXTERNAL_URL);
+}
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 app.use(cors({
-  origin: corsOrigins,
+  origin: isProduction ? true : corsOrigins,
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -176,11 +181,17 @@ const PORT = process.env.PORT || 5000;
 
 async function tryMigrations() {
   try {
+    const connected = await testConnection();
+    if (!connected) {
+      console.error('Cannot connect to database, retrying in 15 seconds...');
+      setTimeout(tryMigrations, 15000);
+      return;
+    }
     await runMigrations();
-    console.log(`📊 Health check: http://localhost:${PORT}/api/health\n`);
+    console.log(`Health check: http://localhost:${PORT}/api/health\n`);
   } catch (err) {
-    console.error('⚠️ Database migration failed:', err.message);
-    console.error('⚠️ Will retry in 15 seconds...');
+    console.error('Database migration failed:', err.message);
+    console.error('Will retry in 15 seconds...');
     setTimeout(tryMigrations, 15000);
   }
 }

@@ -1,8 +1,8 @@
-import { pool } from '../db/index.js';
+import { queryWithRetry } from '../db/index.js';
 
 export const getBudgetByProject = async (req, res, next) => {
   try {
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `SELECT * FROM budget_entries WHERE project_id = $1 ORDER BY date DESC, created_at DESC`,
       [req.params.projectId]
     );
@@ -12,13 +12,13 @@ export const getBudgetByProject = async (req, res, next) => {
 
 export const getBudgetSummary = async (req, res, next) => {
   try {
-    const { rows: project } = await pool.query(
+    const { rows: project } = await queryWithRetry(
       'SELECT budget FROM projects WHERE id = $1',
       [req.params.projectId]
     );
     if (!project[0]) return res.status(404).json({ error: 'Project not found' });
 
-    const { rows: summary } = await pool.query(`
+    const { rows: summary } = await queryWithRetry(`
       SELECT
         SUM(planned_cost) as total_planned,
         SUM(actual_cost) as total_actual,
@@ -31,7 +31,7 @@ export const getBudgetSummary = async (req, res, next) => {
       FROM budget_entries WHERE project_id = $1
     `, [req.params.projectId]);
 
-    const { rows: byCategory } = await pool.query(`
+    const { rows: byCategory } = await queryWithRetry(`
       SELECT
         category,
         SUM(planned_cost) as planned,
@@ -56,7 +56,7 @@ export const createBudgetEntry = async (req, res, next) => {
     if (!category || !description)
       return res.status(400).json({ error: 'Category and description are required' });
 
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `INSERT INTO budget_entries (project_id, category, description, planned_cost, actual_cost, date, notes)
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
       [req.params.projectId, category, description, planned_cost, actual_cost, date || null, notes]
@@ -68,7 +68,7 @@ export const createBudgetEntry = async (req, res, next) => {
 export const updateBudgetEntry = async (req, res, next) => {
   try {
     const { category, description, planned_cost, actual_cost, date, notes } = req.body;
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `UPDATE budget_entries SET
         category = COALESCE($1, category),
         description = COALESCE($2, description),
@@ -87,7 +87,7 @@ export const updateBudgetEntry = async (req, res, next) => {
 
 export const deleteBudgetEntry = async (req, res, next) => {
   try {
-    const { rows } = await pool.query('DELETE FROM budget_entries WHERE id = $1 RETURNING id', [req.params.id]);
+    const { rows } = await queryWithRetry('DELETE FROM budget_entries WHERE id = $1 RETURNING id', [req.params.id]);
     if (!rows[0]) return res.status(404).json({ error: 'Budget entry not found' });
     res.json({ message: 'Budget entry deleted successfully' });
   } catch (err) { next(err); }

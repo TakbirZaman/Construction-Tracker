@@ -1,4 +1,4 @@
-import { pool } from '../db/index.js';
+import { queryWithRetry } from '../db/index.js';
 
 export const getDashboardStats = async (req, res, next) => {
   try {
@@ -22,7 +22,7 @@ export const getDashboardStats = async (req, res, next) => {
       projectParams.push(req.user.id, req.user.id);
     }
 
-    const { rows: projects } = await pool.query(projectQuery, projectParams);
+    const { rows: projects } = await queryWithRetry(projectQuery, projectParams);
 
     // Task stats
     let taskQuery = `
@@ -40,10 +40,10 @@ export const getDashboardStats = async (req, res, next) => {
       taskParams.push(req.user.id);
     }
 
-    const { rows: tasks } = await pool.query(taskQuery, taskParams);
+    const { rows: tasks } = await queryWithRetry(taskQuery, taskParams);
 
     // Budget overview
-    const { rows: budget } = await pool.query(`
+    const { rows: budget } = await queryWithRetry(`
       SELECT
         COALESCE(SUM(planned_cost), 0) as total_planned,
         COALESCE(SUM(actual_cost), 0) as total_actual,
@@ -52,7 +52,7 @@ export const getDashboardStats = async (req, res, next) => {
     `);
 
     // Recent activity (recent tasks updated)
-    const { rows: recentTasks } = await pool.query(`
+    const { rows: recentTasks } = await queryWithRetry(`
       SELECT t.id, t.title, t.status, t.priority, t.progress, t.updated_at,
         p.name as project_name, u.name as assignee_name, u.avatar as assignee_avatar
       FROM tasks t
@@ -63,7 +63,7 @@ export const getDashboardStats = async (req, res, next) => {
     `);
 
     // Progress overview per project
-    const { rows: projectProgress } = await pool.query(`
+    const { rows: projectProgress } = await queryWithRetry(`
       SELECT
         p.id, p.name, p.status,
         COUNT(t.id) as total_tasks,
@@ -83,7 +83,7 @@ export const getDashboardStats = async (req, res, next) => {
     `);
 
     // Budget by category chart data
-    const { rows: budgetByCategory } = await pool.query(`
+    const { rows: budgetByCategory } = await queryWithRetry(`
       SELECT category, SUM(planned_cost) as planned, SUM(actual_cost) as actual
       FROM budget_entries GROUP BY category ORDER BY planned DESC
     `);

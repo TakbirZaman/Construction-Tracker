@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { pool } from '../db/index.js';
+import { queryWithRetry } from '../db/index.js';
 
 export const authenticate = async (req, res, next) => {
   try {
@@ -11,7 +11,7 @@ export const authenticate = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       'SELECT id, name, email, role, avatar, is_active FROM users WHERE id = $1',
       [decoded.userId]
     );

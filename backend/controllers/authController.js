@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { pool } from '../db/index.js';
+import { queryWithRetry } from '../db/index.js';
 
 const generateToken = (userId) =>
   jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -11,7 +11,7 @@ export const login = async (req, res, next) => {
     if (!email || !password)
       return res.status(400).json({ error: 'Email and password are required' });
 
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       'SELECT * FROM users WHERE email = $1 AND is_active = true',
       [email.toLowerCase().trim()]
     );
@@ -39,7 +39,7 @@ export const register = async (req, res, next) => {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
 
     // ── Check for duplicate email ──────────────────────────────────────────
-    const { rows: existing } = await pool.query(
+    const { rows: existing } = await queryWithRetry(
       'SELECT id FROM users WHERE email = $1',
       [email.toLowerCase().trim()]
     );
@@ -48,7 +48,7 @@ export const register = async (req, res, next) => {
     }
 
     const hashed = await bcrypt.hash(password, 10);
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `INSERT INTO users (name, email, password, role, avatar)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING id, name, email, role, avatar, is_active, created_at`,
@@ -79,14 +79,14 @@ export const changePassword = async (req, res, next) => {
     if (newPassword.length < 6)
       return res.status(400).json({ error: 'New password must be at least 6 characters' });
 
-    const { rows } = await pool.query('SELECT password FROM users WHERE id = $1', [req.user.id]);
+    const { rows } = await queryWithRetry('SELECT password FROM users WHERE id = $1', [req.user.id]);
 
     if (!(await bcrypt.compare(currentPassword, rows[0].password))) {
       return res.status(400).json({ error: 'Current password is incorrect' });
     }
 
     const hashed = await bcrypt.hash(newPassword, 10);
-    await pool.query('UPDATE users SET password = $1, updated_at = NOW() WHERE id = $2', [hashed, req.user.id]);
+    await queryWithRetry('UPDATE users SET password = $1, updated_at = NOW() WHERE id = $2', [hashed, req.user.id]);
     res.json({ message: 'Password changed successfully' });
   } catch (err) { next(err); }
 };

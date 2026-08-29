@@ -1,4 +1,4 @@
-import { pool } from '../db/index.js';
+import { queryWithRetry } from '../db/index.js';
 
 export const getAllProjects = async (req, res, next) => {
   try {
@@ -40,14 +40,14 @@ export const getAllProjects = async (req, res, next) => {
     if (conditions.length) query += ' WHERE ' + conditions.join(' AND ');
     query += ' GROUP BY p.id, u.name, u.avatar ORDER BY p.created_at DESC';
 
-    const { rows } = await pool.query(query, params);
+    const { rows } = await queryWithRetry(query, params);
     res.json(rows);
   } catch (err) { next(err); }
 };
 
 export const getProjectById = async (req, res, next) => {
   try {
-    const { rows } = await pool.query(`
+    const { rows } = await queryWithRetry(`
       SELECT
         p.*,
         u.name as manager_name,
@@ -78,7 +78,7 @@ export const createProject = async (req, res, next) => {
     const { name, description, status = 'planning', budget = 0, start_date, end_date, location, manager_id } = req.body;
     if (!name) return res.status(400).json({ error: 'Project name is required' });
 
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `INSERT INTO projects (name, description, status, budget, start_date, end_date, location, manager_id, created_by)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
       [name, description, status, budget, start_date || null, end_date || null, location, manager_id || null, req.user.id]
@@ -90,7 +90,7 @@ export const createProject = async (req, res, next) => {
 export const updateProject = async (req, res, next) => {
   try {
     const { name, description, status, budget, start_date, end_date, location, manager_id } = req.body;
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `UPDATE projects SET
         name = COALESCE($1, name),
         description = COALESCE($2, description),
@@ -111,7 +111,7 @@ export const updateProject = async (req, res, next) => {
 
 export const deleteProject = async (req, res, next) => {
   try {
-    const { rows } = await pool.query('DELETE FROM projects WHERE id = $1 RETURNING id', [req.params.id]);
+    const { rows } = await queryWithRetry('DELETE FROM projects WHERE id = $1 RETURNING id', [req.params.id]);
     if (!rows[0]) return res.status(404).json({ error: 'Project not found' });
     res.json({ message: 'Project deleted successfully' });
   } catch (err) { next(err); }
@@ -119,7 +119,7 @@ export const deleteProject = async (req, res, next) => {
 
 export const getProjectStats = async (req, res, next) => {
   try {
-    const { rows: stats } = await pool.query(`
+    const { rows: stats } = await queryWithRetry(`
       SELECT
         COUNT(*) as total_projects,
         COUNT(CASE WHEN status = 'active' THEN 1 END) as active_projects,
@@ -136,7 +136,7 @@ export const getProjectStats = async (req, res, next) => {
       FROM projects
     `);
 
-    const { rows: budgetByCategory } = await pool.query(`
+    const { rows: budgetByCategory } = await queryWithRetry(`
       SELECT
         category,
         SUM(planned_cost) as planned,
@@ -146,7 +146,7 @@ export const getProjectStats = async (req, res, next) => {
       ORDER BY planned DESC
     `);
 
-    const { rows: projectBudgets } = await pool.query(`
+    const { rows: projectBudgets } = await queryWithRetry(`
       SELECT
         p.name,
         p.budget,

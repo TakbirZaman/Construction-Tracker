@@ -1,4 +1,3 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
@@ -10,13 +9,68 @@ const { Pool } = pg;
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
+  allowExitOnIdle: true,
 });
 
-export const db = drizzle(pool);
+pool.on('error', (err) => {
+  console.error('Unexpected database pool error:', err.message);
+});
+
+pool.on('connect', () => {
+  console.log('New database connection established');
+});
+
+export async function testConnection() {
+  const maxRetries = 3;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const client = await pool.connect();
+      await client.query('SELECT 1');
+      client.release();
+      console.log('Database connection successful');
+      return true;
+    } catch (err) {
+      console.error(`Database connection attempt ${attempt}/${maxRetries} failed:`, err.message);
+      if (attempt < maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+      }
+    }
+  }
+  return false;
+}
+
+export async function queryWithRetry(text, params, retries = 2) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await pool.query(text, params);
+    } catch (err) {
+      const isRetryable = [
+        'connection terminated unexpectedly',
+        'connection timed out',
+        'ECONNRESET',
+        'EPIPE',
+        'server closed the connection unexpectedly',
+      ].some((msg) => err.message?.toLowerCase().includes(msg.toLowerCase()));
+
+      console.error(`Query attempt ${attempt + 1}/${retries + 1} failed:`, err.message);
+
+      if (isRetryable && attempt < retries) {
+        console.log(`Retrying query in ${(attempt + 1) * 1000}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, (attempt + 1) * 1000));
+        continue;
+      }
+      throw err;
+    }
+  }
+}
 
 export async function runMigrations() {
-  const client = await pool.connect();
+  let client;
   try {
+    client = await pool.connect();
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -87,10 +141,15 @@ export async function runMigrations() {
         updated_at TIMESTAMP DEFAULT NOW()
       );
     `);
-    console.log('✅ Database migrations completed');
+    console.log('Database migrations completed');
     await seedData(client);
+  } catch (err) {
+    console.error('Migration error:', err.message);
+    throw err;
   } finally {
-    client.release();
+    if (client) {
+      client.release();
+    }
   }
 }
 

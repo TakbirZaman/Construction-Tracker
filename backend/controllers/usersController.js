@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs';
-import { pool } from '../db/index.js';
+import { queryWithRetry } from '../db/index.js';
 
 export const getAllUsers = async (req, res, next) => {
   try {
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `SELECT id, name, email, role, avatar, is_active, created_at,
         (SELECT COUNT(*) FROM tasks WHERE assigned_to = users.id) as task_count,
         (SELECT COUNT(*) FROM projects WHERE manager_id = users.id) as project_count
@@ -15,7 +15,7 @@ export const getAllUsers = async (req, res, next) => {
 
 export const getUserById = async (req, res, next) => {
   try {
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `SELECT id, name, email, role, avatar, is_active, created_at FROM users WHERE id = $1`,
       [req.params.id]
     );
@@ -34,7 +34,7 @@ export const createUser = async (req, res, next) => {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
 
     // ── Duplicate email check ──────────────────────────────────────────────
-    const { rows: existing } = await pool.query(
+    const { rows: existing } = await queryWithRetry(
       'SELECT id FROM users WHERE email = $1',
       [email.toLowerCase().trim()]
     );
@@ -43,7 +43,7 @@ export const createUser = async (req, res, next) => {
     }
 
     const hashed = await bcrypt.hash(password, 10);
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `INSERT INTO users (name, email, password, role, avatar)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING id, name, email, role, avatar, is_active, created_at`,
@@ -64,7 +64,7 @@ export const updateUser = async (req, res, next) => {
 
     // ── If email is being changed, check it's not taken by someone else ───
     if (email) {
-      const { rows: existing } = await pool.query(
+      const { rows: existing } = await queryWithRetry(
         'SELECT id FROM users WHERE email = $1 AND id != $2',
         [email.toLowerCase().trim(), req.params.id]
       );
@@ -73,7 +73,7 @@ export const updateUser = async (req, res, next) => {
       }
     }
 
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `UPDATE users SET
         name      = COALESCE($1, name),
         email     = COALESCE($2, email),
@@ -100,7 +100,7 @@ export const deleteUser = async (req, res, next) => {
     if (parseInt(req.params.id) === req.user.id)
       return res.status(400).json({ error: 'Cannot delete your own account' });
 
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       'UPDATE users SET is_active = false, updated_at = NOW() WHERE id = $1 RETURNING id',
       [req.params.id]
     );
@@ -111,7 +111,7 @@ export const deleteUser = async (req, res, next) => {
 
 export const getWorkers = async (req, res, next) => {
   try {
-    const { rows } = await pool.query(
+    const { rows } = await queryWithRetry(
       `SELECT id, name, email, role, avatar FROM users
        WHERE role IN ('worker','manager') AND is_active = true ORDER BY name`
     );
