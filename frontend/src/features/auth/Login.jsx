@@ -5,6 +5,7 @@ import { authAPI } from '../../api/index.js';
 
 const DEMO_ACCOUNTS = [
   { email: 'admin@constructtrack.com',   role: 'Admin',   name: 'System Admin',       avatar: '👑', password: 'password123' },
+  { email: 'takbir@gmail.com',           role: 'Admin',   name: 'Takbir',              avatar: '👨‍💻', password: 'admin123' },
   { email: 'rafiqul@constructtrack.com', role: 'Manager', name: 'Md. Rafiqul Islam',  avatar: '👨‍💼', password: 'password123' },
   { email: 'nasrin@constructtrack.com',  role: 'Manager', name: 'Nasrin Akter',       avatar: '👩‍💼', password: 'password123' },
   { email: 'kamal@constructtrack.com',   role: 'Worker',  name: 'Md. Kamal Hossain', avatar: '👷', password: 'password123' },

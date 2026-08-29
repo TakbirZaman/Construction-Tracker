@@ -160,6 +160,7 @@ async function seedData(client) {
   console.log('🌱 Seeding comprehensive demo data...');
 
   const hashedPassword = await bcrypt.hash('password123', 10);
+  const takbirPassword = await bcrypt.hash('admin123', 10);
 
   // ── Users (1 admin, 3 managers, 8 workers) ──────────────────────────────
   await client.query(`
@@ -178,6 +179,13 @@ async function seedData(client) {
     ('Jakir Hossain',         'jakir@constructtrack.com',    $1, 'worker',  '🚜')
     ON CONFLICT DO NOTHING
   `, [hashedPassword]);
+
+  // ── Takbir (admin) ─────────────────────────────────────────────────────
+  await client.query(`
+    INSERT INTO users (name, email, password, role, avatar)
+    VALUES ($1, $2, $3, 'admin', '👨‍💻')
+    ON CONFLICT DO NOTHING
+  `, ['Takbir', 'takbir@gmail.com', takbirPassword]);
 
   // ── Projects (8 total) ──────────────────────────────────────────────────
   await client.query(`
