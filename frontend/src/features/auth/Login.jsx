@@ -6,11 +6,12 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { authAPI } from '../../api/index.js';
 
 const DEMO_ACCOUNTS = [
-  { email: 'takbir@constructtrack.com',   role: 'Admin',   name: 'Takbir',   avatar: '👑', password: 'admin123', color: 'from-instagram-purple to-purple-700' },
+  { email: 'takbir@constructtrack.com',   role: 'Admin',   name: 'Takbir',   avatar: '👨‍💻', password: 'admin123', color: 'from-instagram-purple to-purple-700' },
   { email: 'sakib@constructtrack.com',    role: 'Admin',   name: 'Sakib',    avatar: '👨‍💻', password: 'admin123', color: 'from-brand-500 to-brand-700' },
-  { email: 'opi@constructtrack.com',      role: 'Manager', name: 'Opi',      avatar: '👨‍💼', password: 'admin123', color: 'from-emerald-500 to-emerald-700' },
-  { email: 'alamain@constructtrack.com',  role: 'Manager', name: 'Alamain',  avatar: '👩‍💼', password: 'admin123', color: 'from-instagram-orange to-orange-600' },
-  { email: 'kawshik@constructtrack.com',  role: 'Worker',  name: 'Kawshik',  avatar: '👷', password: 'admin123', color: 'from-rose-500 to-rose-700' },
+  { email: 'opi@constructtrack.com',      role: 'Manager', name: 'Opi',      avatar: '👨‍💼', password: 'manager123', color: 'from-emerald-500 to-emerald-700' },
+  { email: 'tanvir@constructtrack.com',   role: 'Manager', name: 'Tanvir',   avatar: '👨‍💼', password: 'manager123', color: 'from-rose-500 to-rose-700' },
+  { email: 'kawshik@constructtrack.com',  role: 'Worker',  name: 'Kawshik',  avatar: '👷', password: 'worker123', color: 'from-amber-500 to-orange-600' },
+  { email: 'arif@constructtrack.com',     role: 'Worker',  name: 'Arif',     avatar: '👷', password: 'worker123', color: 'from-pink-500 to-pink-700' },
 ];
 
 const AVATARS = ['👑', '👩‍💼', '🧑‍💼', '👷', '👩‍🔧', '🔧', '🧱', '🏗️', '⚙️', '📐'];

@@ -159,19 +159,32 @@ export async function runMigrations() {
 }
 
 async function ensureDemoAccounts(client) {
+  const workerPassword = await bcrypt.hash('worker123', 10);
   const adminPassword = await bcrypt.hash('admin123', 10);
+  const managerPassword = await bcrypt.hash('manager123', 10);
   await client.query(`
     INSERT INTO users (name, email, password, role, avatar, phone, department, employee_id, location, bio) VALUES
-    ('Takbir',   'takbir@constructtrack.com',   $1, 'admin',   '👨‍💻', '+880 1711-000010', 'engineering', 'CT-010', 'Dhaka HQ',  'Construction technology expert and project lead'),
-    ('Sakib',    'sakib@constructtrack.com',    $1, 'admin',   '👨‍💻', '+880 1711-000011', 'engineering', 'CT-011', 'Dhaka HQ',  'Technical lead and system administrator'),
-    ('Opi',      'opi@constructtrack.com',      $1, 'manager', '👨‍💼', '+880 1712-100004', 'site_ops',   'CT-104', 'Dhanmondi, Dhaka',  'Site operations manager'),
-    ('Alamain',  'alamain@constructtrack.com',  $1, 'manager', '👩‍💼', '+880 1712-100005', 'procurement','CT-105', 'Banani, Dhaka',     'Procurement and supply chain manager'),
-    ('Kawshik',  'kawshik@constructtrack.com',  $1, 'worker',  '👷', '+880 1713-200009', 'site_ops',   'CT-209', 'Mirpur, Dhaka',     'Skilled construction worker and foreman')
+    ('Takbir',       'takbir@constructtrack.com',       $1, 'admin',   '👨‍💻', '+880 1711-000010', 'engineering', 'CT-010', 'Dhaka HQ',          'Construction technology expert and project lead'),
+    ('Sakib',        'sakib@constructtrack.com',        $1, 'admin',   '👨‍💻', '+880 1711-000011', 'engineering', 'CT-011', 'Dhaka HQ',          'Technical lead and system administrator'),
+    ('Opi',          'opi@constructtrack.com',           $2, 'manager', '👨‍💼', '+880 1712-100004', 'site_ops',   'CT-104', 'Dhanmondi, Dhaka',  'Site operations manager'),
+    ('Alamain',      'alamain@constructtrack.com',       $2, 'manager', '👩‍💼', '+880 1712-100005', 'procurement','CT-105', 'Banani, Dhaka',     'Procurement and supply chain manager'),
+    ('Tanvir Hasan', 'tanvir@constructtrack.com',         $2, 'manager', '👨‍💼', '+880 1712-100006', 'safety',     'CT-106', 'Gulshan, Dhaka',    'HSE manager with 10 years in industrial safety'),
+    ('Sabrina Akter','sabrina@constructtrack.com',       $2, 'manager', '👩‍💼', '+880 1712-100007', 'finance',    'CT-107', 'Motijheel, Dhaka',  'Cost control and financial planning specialist'),
+    ('Mizanur Rahman','mizanur@constructtrack.com',      $2, 'manager', '👨‍💼', '+880 1712-100008', 'engineering','CT-108', 'Uttara, Dhaka',     'Structural design and quality assurance lead'),
+    ('Kawshik',      'kawshik@constructtrack.com',       $3, 'worker',  '👷', '+880 1713-200009', 'site_ops',   'CT-209', 'Mirpur, Dhaka',     'Skilled construction worker and foreman'),
+    ('Arif Uddin',   'arif@constructtrack.com',           $3, 'worker',  '👷', '+880 1713-200010', 'site_ops',   'CT-210', 'Tejgaon, Dhaka',    'Concrete pouring and finishing specialist'),
+    ('Ruma Begum',   'ruma@constructtrack.com',           $3, 'worker',  '👩‍🔧', '+880 1713-200011', 'engineering','CT-211', 'Mohammadpur, Dhaka','Plumbing and water supply system installer'),
+    ('Habib Rahman', 'habib@constructtrack.com',          $3, 'worker',  '🔧', '+880 1713-200012', 'engineering','CT-212', 'Khilgaon, Dhaka',   'HVAC installation and commissioning technician'),
+    ('Nargis Akter', 'nargis@constructtrack.com',         $3, 'worker',  '🧱', '+880 1713-200013', 'site_ops',   'CT-213', 'Bashundhara, Dhaka','Brickwork, plastering and finishing expert'),
+    ('Jamal Mia',    'jamal@constructtrack.com',           $3, 'worker',  '🚜', '+880 1713-200014', 'site_ops',   'CT-214', 'Uttarkhan, Dhaka',  'Crane operator with heavy lifting certification'),
+    ('Farhana Yasmin','farhana@constructtrack.com',        $3, 'worker',  '📐', '+880 1713-200015', 'design',     'CT-215', 'Gulshan, Dhaka',    'Survey and layout specialist, total station expert'),
+    ('Monir Hossain', 'monir@constructtrack.com',          $3, 'worker',  '🔩', '+880 1713-200016', 'site_ops',   'CT-216', 'Shahbagh, Dhaka',   'Steel reinforcement tying and welding specialist')
     ON CONFLICT (email) DO UPDATE SET
       password = EXCLUDED.password,
-      role = EXCLUDED.role
-  `, [adminPassword]);
-  console.log('✅ Demo accounts verified/created (takbir, sakib, opi, alamain, kawshik)');
+      role = EXCLUDED.role,
+      name = EXCLUDED.name
+  `, [adminPassword, managerPassword, workerPassword]);
+  console.log('✅ Demo accounts verified/created (8 workers, 5 managers, 2 admins)');
 }
 
 async function seedData(client) {
