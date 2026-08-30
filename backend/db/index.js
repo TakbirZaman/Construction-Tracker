@@ -6,12 +6,15 @@ dotenv.config();
 
 const { Pool } = pg;
 
+const dbUrl = process.env.DATABASE_URL || '';
+const useSSL = dbUrl.includes('render.com') || process.env.NODE_ENV === 'production';
+
 export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
+  connectionString: dbUrl,
+  ...(useSSL && !dbUrl.includes('sslmode=') ? { ssl: { rejectUnauthorized: false } } : {}),
   max: 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 10000,
+  connectionTimeoutMillis: 15000,
   allowExitOnIdle: true,
 });
 
