@@ -12,6 +12,6 @@ services:
       - key: JWT_SECRET
         value: ct-pro-52457423da7754545930fc5779faf99ce505169a04da0d85ae711232d53db845
       - key: DATABASE_URL
-        value: postgresql://todo_app_nr3k_user:MQoEbP97Irh60OJfF1HdLsMgKvdplLnm@dpg-d8vc43ugvqtc73c2ov70-a.oregon-postgres.render.com:5432/constructtrack
+        value: postgresql://todo_app_nr3k_user:MQoEbP97Irh60OJfF1HdLsMgKvdplLnm@dpg-d8vc43ugvqtc73c2ov70-a.oregon-postgres.render.com:5432/constructtrack?sslmode=require
       - key: PUBLIC_DIR
         value: ../frontend/dist
