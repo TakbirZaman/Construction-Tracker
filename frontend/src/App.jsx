@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import { WSProvider } from './context/WSContext.jsx';
+import { DarkModeProvider, useDarkMode } from './context/DarkModeContext.jsx';
 import Layout from './components/layout/Layout.jsx';
 import SplashScreen from './components/ui/SplashScreen.jsx';
 import Login from './features/auth/Login.jsx';
@@ -16,8 +18,11 @@ import AdminPanel from './features/admin/AdminPanel.jsx';
 function ProtectedRoute({ children, roles }) {
   const { user, loading } = useAuth();
   if (loading) return (
-    <div className="flex items-center justify-center h-screen bg-slate-950">
-      <div className="w-6 h-6 border-2 border-brand-500/30 border-t-brand-500 rounded-full animate-spin" />
+    <div className="flex items-center justify-center h-screen bg-slate-50">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-8 h-8 border-3 border-brand-100 border-t-brand-500 rounded-full animate-spin" />
+        <p className="text-slate-400 text-sm font-medium">Loading...</p>
+      </div>
     </div>
   );
   if (!user) return <Navigate to="/login" replace />;
@@ -43,21 +48,49 @@ function AppRoutes() {
   );
 }
 
-export default function App() {
+function AppShell() {
+  const { dark } = useDarkMode();
   const [splashDone, setSplashDone] = useState(false);
 
   return (
-    <>
-      {!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}
-      {splashDone && (
-        <BrowserRouter>
-          <AuthProvider>
-            <WSProvider>
-              <AppRoutes />
-            </WSProvider>
-          </AuthProvider>
-        </BrowserRouter>
-      )}
-    </>
+    <div className={dark ? 'dark' : ''}>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: dark ? '#1e293b' : '#ffffff',
+              color: dark ? '#e2e8f0' : '#1e293b',
+              border: `1px solid ${dark ? '#334155' : '#e2e8f0'}`,
+              borderRadius: '12px',
+              boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)',
+              fontSize: '14px',
+              padding: '12px 16px',
+            },
+          }}
+        />
+        {!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}
+        {splashDone && (
+          <BrowserRouter>
+            <AuthProvider>
+              <WSProvider>
+                <AppRoutes />
+              </WSProvider>
+            </AuthProvider>
+          </BrowserRouter>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <React.StrictMode>
+      <DarkModeProvider>
+        <AppShell />
+      </DarkModeProvider>
+    </React.StrictMode>
   );
 }

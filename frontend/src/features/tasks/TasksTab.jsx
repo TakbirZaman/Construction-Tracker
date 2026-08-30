@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { tasksAPI, usersAPI } from '../../api/index.js';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { Modal, StatusBadge, PriorityBadge, ProgressBar, EmptyState, ConfirmDialog, FormField, Alert, Spinner } from '../../components/ui/index.jsx';
 import { formatDate } from '../../utils/helpers.js';
 
@@ -48,8 +50,13 @@ export default function TasksTab({ projectId, onUpdate }) {
     if (!form.title.trim()) return setError('Task title is required');
     setSaving(true); setError('');
     try {
-      if (editTask) await tasksAPI.update(projectId, editTask.id, form);
-      else await tasksAPI.create(projectId, form);
+      if (editTask) {
+        await tasksAPI.update(projectId, editTask.id, form);
+        toast.success('Task updated!');
+      } else {
+        await tasksAPI.create(projectId, form);
+        toast.success('Task created!');
+      }
       setModalOpen(false);
       load();
       onUpdate?.();
@@ -58,7 +65,6 @@ export default function TasksTab({ projectId, onUpdate }) {
     } finally { setSaving(false); }
   };
 
-  // Inline field update
   const handleInlineUpdate = async (task, field, value) => {
     setInlineEdit(prev => ({ ...prev, [task.id]: true }));
     try {
@@ -81,9 +87,10 @@ export default function TasksTab({ projectId, onUpdate }) {
     try {
       await tasksAPI.delete(projectId, deleteId);
       setDeleteId(null);
+      toast.success('Task deleted');
       load();
       onUpdate?.();
-    } catch (err) { alert('Failed to delete task'); }
+    } catch (err) { toast.error('Failed to delete task'); }
   };
 
   const filtered = tasks.filter(t => {
@@ -101,7 +108,6 @@ export default function TasksTab({ projectId, onUpdate }) {
 
   return (
     <div>
-      {/* Controls */}
       <div className="flex items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <input className="input w-52" placeholder="Search tasks..." value={filter} onChange={e => setFilter(e.target.value)} />
@@ -125,8 +131,8 @@ export default function TasksTab({ projectId, onUpdate }) {
               <div key={status}>
                 <div className="flex items-center gap-3 mb-3">
                   <StatusBadge status={status} />
-                  <span className="text-xs text-slate-500 font-mono">{group.length}</span>
-                  <div className="flex-1 h-px bg-slate-800" />
+                  <span className="text-xs text-slate-400 font-mono font-semibold">{group.length}</span>
+                  <div className="flex-1 h-px bg-slate-200" />
                 </div>
                 <div className="space-y-2">
                   {group.map(task => (
@@ -150,9 +156,8 @@ export default function TasksTab({ projectId, onUpdate }) {
         </div>
       )}
 
-      {/* Modal */}
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editTask ? 'Edit Task' : 'New Task'} size="lg">
-        {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-3 py-2 rounded-lg mb-4">{error}</div>}
+        {error && <div className="bg-rose-50 border border-rose-200 text-rose-700 text-sm px-3 py-2 rounded-xl mb-4">{error}</div>}
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
             <FormField label="Task Title" required>
@@ -196,7 +201,7 @@ export default function TasksTab({ projectId, onUpdate }) {
             </FormField>
           </div>
         </div>
-        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-800">
+        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
           <button className="btn-secondary" onClick={() => setModalOpen(false)}>Cancel</button>
           <button className="btn-primary" onClick={handleSave} disabled={saving}>
             {saving ? 'Saving...' : editTask ? '✓ Update Task' : '＋ Create Task'}
@@ -214,28 +219,25 @@ function TaskRow({ task, workers, canManage, isWorker, userId, loading, onInline
   const canEdit = canManage || (isWorker && task.assigned_to === userId);
 
   return (
-    <div className={`card p-4 flex items-center gap-4 group transition-all ${loading ? 'opacity-60' : ''}`}>
-      {/* Priority indicator */}
+    <div className={`card p-4 flex items-center gap-4 group transition-all duration-300 hover:shadow-medium ${loading ? 'opacity-60' : ''}`}>
       <div className={`w-1 self-stretch rounded-full flex-shrink-0 ${
-        task.priority === 'critical' ? 'bg-red-500' :
+        task.priority === 'critical' ? 'bg-rose-500' :
         task.priority === 'high' ? 'bg-orange-500' :
-        task.priority === 'medium' ? 'bg-yellow-500' : 'bg-slate-700'
+        task.priority === 'medium' ? 'bg-amber-500' : 'bg-slate-300'
       }`} />
 
-      {/* Main content */}
       <div className="flex-1 min-w-0 space-y-2">
-        <div className="flex items-center gap-3 flex-wrap">
-          <span className="font-medium text-slate-200 text-sm">{task.title}</span>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="font-semibold text-slate-700 text-sm">{task.title}</span>
           <PriorityBadge priority={task.priority} />
           {task.due_date && (
-            <span className="text-xs text-slate-500">📅 {formatDate(task.due_date)}</span>
+            <span className="text-xs text-slate-400">📅 {formatDate(task.due_date)}</span>
           )}
         </div>
-        {task.description && <p className="text-xs text-slate-500 line-clamp-1">{task.description}</p>}
+        {task.description && <p className="text-xs text-slate-400 line-clamp-1">{task.description}</p>}
         <ProgressBar value={task.progress} height="h-1" />
       </div>
 
-      {/* Inline controls */}
       <div className="flex items-center gap-2 flex-shrink-0">
         {canEdit ? (
           <select
@@ -261,15 +263,15 @@ function TaskRow({ task, workers, canManage, isWorker, userId, loading, onInline
         )}
 
         {task.assignee_avatar && (
-          <div className="w-7 h-7 bg-slate-800 rounded-full flex items-center justify-center text-sm border border-slate-700" title={task.assignee_name}>
+          <div className="w-7 h-7 bg-gradient-to-br from-brand-100 to-brand-200 rounded-full flex items-center justify-center text-sm border border-white shadow-sm" title={task.assignee_name}>
             {task.assignee_avatar}
           </div>
         )}
 
         {canManage && (
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={onEdit} className="text-slate-400 hover:text-white px-2 py-1 rounded hover:bg-slate-700 text-xs transition-colors">Edit</button>
-            <button onClick={onDelete} className="text-red-400 hover:text-red-300 px-2 py-1 rounded hover:bg-red-500/10 text-xs transition-colors">Del</button>
+            <button onClick={onEdit} className="text-slate-400 hover:text-slate-700 px-2 py-1 rounded-lg hover:bg-slate-100 text-xs transition-all font-medium">Edit</button>
+            <button onClick={onDelete} className="text-rose-400 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 text-xs transition-all font-medium">Del</button>
           </div>
         )}
       </div>

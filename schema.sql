@@ -10,6 +10,11 @@ CREATE TABLE IF NOT EXISTS users (
   role VARCHAR(20) NOT NULL DEFAULT 'worker' CHECK (role IN ('admin','manager','worker')),
   avatar VARCHAR(10) DEFAULT '👷',
   is_active BOOLEAN DEFAULT true,
+  phone VARCHAR(20),
+  department VARCHAR(50),
+  employee_id VARCHAR(20),
+  location VARCHAR(100),
+  bio TEXT,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );

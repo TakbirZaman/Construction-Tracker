@@ -17,11 +17,11 @@ export default class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex items-center justify-center h-screen bg-slate-950 p-8">
+        <div className="flex items-center justify-center h-screen bg-gradient-to-br from-slate-50 via-brand-50/20 to-violet-50/10 p-8">
           <div className="max-w-md text-center">
-            <div className="text-5xl mb-4">💥</div>
-            <h1 className="text-xl font-bold text-white mb-2">Something went wrong</h1>
-            <p className="text-slate-400 text-sm mb-6">
+            <div className="text-6xl mb-5">💥</div>
+            <h1 className="text-2xl font-bold text-slate-800 mb-2">Something went wrong</h1>
+            <p className="text-slate-500 text-sm mb-6">
               {this.state.error?.message || 'An unexpected error occurred'}
             </p>
             <button

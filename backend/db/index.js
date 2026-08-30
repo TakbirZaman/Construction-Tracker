@@ -80,6 +80,11 @@ export async function runMigrations() {
         role VARCHAR(20) NOT NULL DEFAULT 'worker' CHECK (role IN ('admin','manager','worker')),
         avatar VARCHAR(10) DEFAULT '👷',
         is_active BOOLEAN DEFAULT true,
+        phone VARCHAR(20),
+        department VARCHAR(50),
+        employee_id VARCHAR(20),
+        location VARCHAR(100),
+        bio TEXT,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       );
@@ -162,28 +167,28 @@ async function seedData(client) {
   const hashedPassword = await bcrypt.hash('password123', 10);
   const takbirPassword = await bcrypt.hash('admin123', 10);
 
-  // ── Users (1 admin, 3 managers, 8 workers) ──────────────────────────────
+  // ── Users (1 admin, 3 managers, 8 workers) with rich profiles ──────────
   await client.query(`
-    INSERT INTO users (name, email, password, role, avatar) VALUES
-    ('System Admin',          'admin@constructtrack.com',    $1, 'admin',   '👑'),
-    ('Md. Rafiqul Islam',     'rafiqul@constructtrack.com',  $1, 'manager', '👨‍💼'),
-    ('Nasrin Akter',          'nasrin@constructtrack.com',   $1, 'manager', '👩‍💼'),
-    ('Engr. Tariq Hossain',  'tariq@constructtrack.com',     $1, 'manager', '🧑‍💼'),
-    ('Md. Kamal Hossain',     'kamal@constructtrack.com',    $1, 'worker',  '👷'),
-    ('Fatema Begum',          'fatema@constructtrack.com',   $1, 'worker',  '👩‍🔧'),
-    ('Md. Shahidul Alam',     'shahidul@constructtrack.com', $1, 'worker',  '🔧'),
-    ('Rezaul Karim',          'rezaul@constructtrack.com',   $1, 'worker',  '⚙️'),
-    ('Sumaiya Khatun',        'sumaiya@constructtrack.com',  $1, 'worker',  '🧱'),
-    ('Abdur Rahim',           'rahim@constructtrack.com',    $1, 'worker',  '🔨'),
-    ('Shamima Yesmin',        'shamima@constructtrack.com',  $1, 'worker',  '🪚'),
-    ('Jakir Hossain',         'jakir@constructtrack.com',    $1, 'worker',  '🚜')
+    INSERT INTO users (name, email, password, role, avatar, phone, department, employee_id, location, bio) VALUES
+    ('System Admin',          'admin@constructtrack.com',    $1, 'admin',   '👑', '+880 1711-000001', 'hr',         'CT-001', 'Dhaka HQ',           'System administrator with full access'),
+    ('Md. Rafiqul Islam',     'rafiqul@constructtrack.com',  $1, 'manager', '👨‍💼', '+880 1712-100001', 'engineering','CT-101', 'Motijheel, Dhaka',   'Senior structural engineer with 15 years experience'),
+    ('Nasrin Akter',          'nasrin@constructtrack.com',   $1, 'manager', '👩‍💼', '+880 1712-100002', 'design',     'CT-102', 'Uttara, Dhaka',      'Architectural design specialist, LEED certified'),
+    ('Engr. Tariq Hossain',  'tariq@constructtrack.com',     $1, 'manager', '🧑‍💼', '+880 1712-100003', 'site_ops',   'CT-103', 'Gulshan, Dhaka',     'Project management professional, PMP certified'),
+    ('Md. Kamal Hossain',     'kamal@constructtrack.com',    $1, 'worker',  '👷', '+880 1713-200001', 'site_ops',   'CT-201', 'Mirpur, Dhaka',      'Expert in foundation and structural work'),
+    ('Fatema Begum',          'fatema@constructtrack.com',   $1, 'worker',  '👩‍🔧', '+880 1713-200002', 'engineering','CT-202', 'Banani, Dhaka',      'MEP installation specialist'),
+    ('Md. Shahidul Alam',     'shahidul@constructtrack.com', $1, 'worker',  '🔧', '+880 1713-200003', 'engineering','CT-203', 'Dhanmondi, Dhaka',   'Electrical systems expert'),
+    ('Rezaul Karim',          'rezaul@constructtrack.com',   $1, 'worker',  '⚙️', '+880 1713-200004', 'site_ops',   'CT-204', 'Bashundhara, Dhaka', 'Heavy equipment operator'),
+    ('Sumaiya Khatun',        'sumaiya@constructtrack.com',  $1, 'worker',  '🧱', '+880 1713-200005', 'procurement','CT-205', 'Mohammadpur, Dhaka', 'Materials and inventory specialist'),
+    ('Abdur Rahim',           'rahim@constructtrack.com',    $1, 'worker',  '🔨', '+880 1713-200006', 'site_ops',   'CT-206', 'Tejgaon, Dhaka',     'Masonry and finishing expert'),
+    ('Shamima Yesmin',        'shamima@constructtrack.com',  $1, 'worker',  '🪚', '+880 1713-200007', 'safety',     'CT-207', 'Khilgaon, Dhaka',    'Safety officer and quality inspector'),
+    ('Jakir Hossain',         'jakir@constructtrack.com',    $1, 'worker',  '🚜', '+880 1713-200008', 'site_ops',   'CT-208', 'Uttarkhan, Dhaka',   'Earthwork and excavation specialist')
     ON CONFLICT DO NOTHING
   `, [hashedPassword]);
 
   // ── Takbir (admin) ─────────────────────────────────────────────────────
   await client.query(`
-    INSERT INTO users (name, email, password, role, avatar)
-    VALUES ($1, $2, $3, 'admin', '👨‍💻')
+    INSERT INTO users (name, email, password, role, avatar, phone, department, employee_id, location, bio)
+    VALUES ($1, $2, $3, 'admin', '👨‍💻', '+880 1711-000010', 'engineering', 'CT-010', 'Dhaka HQ', 'Construction technology expert and project lead')
     ON CONFLICT DO NOTHING
   `, ['Takbir', 'takbir@gmail.com', takbirPassword]);
 

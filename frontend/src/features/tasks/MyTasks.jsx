@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { tasksAPI } from '../../api/index.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import PageHeader from '../../components/layout/PageHeader.jsx';
 import { StatusBadge, PriorityBadge, ProgressBar, EmptyState, Spinner } from '../../components/ui/index.jsx';
 import { formatDate } from '../../utils/helpers.js';
+
+const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.05 } } };
+const item = { hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } };
 
 export default function MyTasks() {
   const { user } = useAuth();
@@ -33,8 +38,10 @@ export default function MyTasks() {
       }
       await tasksAPI.update(task.project_id || 0, task.id, update);
       setTasks(prev => prev.map(t => t.id === task.id ? { ...t, ...update } : t));
+      if (field === 'status') toast.success(`Task marked as ${value.replace('_', ' ')}`);
     } catch (err) {
       console.error(err);
+      toast.error('Failed to update task');
     } finally {
       setUpdating(prev => { const n = { ...prev }; delete n[task.id]; return n; });
     }
@@ -44,6 +51,7 @@ export default function MyTasks() {
     try {
       await tasksAPI.update(task.project_id || 0, task.id, { notes });
       setTasks(prev => prev.map(t => t.id === task.id ? { ...t, notes } : t));
+      toast.success('Notes saved');
     } catch (err) { console.error(err); }
   };
 
@@ -69,38 +77,39 @@ export default function MyTasks() {
       />
 
       {/* Stats */}
-      <div className="grid grid-cols-5 border-b border-slate-800">
+      <div className="grid grid-cols-5 border-b border-slate-200/80 dark:border-slate-700/50 bg-white/50 dark:bg-slate-800/50">
         {[
-          { label: 'Total', value: stats.total, color: 'text-slate-300' },
-          { label: 'Pending', value: stats.pending, color: 'text-slate-400' },
-          { label: 'In Progress', value: stats.inProgress, color: 'text-blue-400' },
-          { label: 'Completed', value: stats.completed, color: 'text-green-400' },
-          { label: 'Blocked', value: stats.blocked, color: 'text-red-400' },
+          { label: 'Total', value: stats.total, color: 'text-slate-700' },
+          { label: 'Pending', value: stats.pending, color: 'text-slate-500' },
+          { label: 'In Progress', value: stats.inProgress, color: 'text-brand-600' },
+          { label: 'Completed', value: stats.completed, color: 'text-emerald-600' },
+          { label: 'Blocked', value: stats.blocked, color: 'text-rose-600' },
         ].map(s => (
-          <div key={s.label} className="px-6 py-4 border-r border-slate-800 last:border-r-0 text-center">
+          <div key={s.label} className="px-4 sm:px-6 py-4 border-r border-slate-100 dark:border-slate-700/50 last:border-r-0 text-center">
             <div className={`text-2xl font-display font-bold ${s.color}`}>{s.value}</div>
-            <div className="text-xs text-slate-500">{s.label}</div>
+            <div className="text-xs text-slate-400 font-medium">{s.label}</div>
           </div>
         ))}
       </div>
 
-      <div className="p-8">
+      <div className="p-4 sm:p-8">
         {loading ? (
           <div className="flex justify-center py-12"><Spinner size="lg" /></div>
         ) : filtered.length === 0 ? (
           <EmptyState icon="✅" title="No tasks assigned" description="You have no tasks assigned to you yet." />
         ) : (
-          <div className="space-y-4">
+          <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
             {filtered.map(task => (
-              <MyTaskCard
-                key={task.id}
-                task={task}
-                loading={!!updating[task.id]}
-                onUpdate={handleUpdate}
-                onNoteUpdate={handleNoteUpdate}
-              />
+              <motion.div key={task.id} variants={item}>
+                <MyTaskCard
+                  task={task}
+                  loading={!!updating[task.id]}
+                  onUpdate={handleUpdate}
+                  onNoteUpdate={handleNoteUpdate}
+                />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </div>
@@ -119,29 +128,29 @@ function MyTaskCard({ task, loading, onUpdate, onNoteUpdate }) {
   };
 
   const priorityBorder = {
-    critical: 'border-l-red-500',
+    critical: 'border-l-rose-500',
     high: 'border-l-orange-500',
-    medium: 'border-l-yellow-500',
-    low: 'border-l-slate-600',
+    medium: 'border-l-amber-500',
+    low: 'border-l-slate-300',
   };
 
   return (
-    <div className={`card border-l-4 ${priorityBorder[task.priority] || ''} overflow-hidden ${loading ? 'opacity-60' : ''}`}>
+    <div className={`card border-l-4 ${priorityBorder[task.priority] || ''} overflow-hidden ${loading ? 'opacity-60' : ''} hover:shadow-medium transition-all duration-300`}>
       <div className="p-5">
         <div className="flex items-start gap-4">
           <div className="flex-1 min-w-0 space-y-3">
-            <div className="flex items-center gap-3 flex-wrap">
-              <span className="font-semibold text-slate-200">{task.title}</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-bold text-slate-800">{task.title}</span>
               <PriorityBadge priority={task.priority} />
-              <span className="text-xs text-slate-500 bg-slate-800 px-2 py-0.5 rounded">
+              <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-lg font-medium">
                 🏗️ {task.project_name}
               </span>
               {task.due_date && (
-                <span className="text-xs text-slate-500">📅 Due {formatDate(task.due_date)}</span>
+                <span className="text-xs text-slate-400">📅 Due {formatDate(task.due_date)}</span>
               )}
             </div>
 
-            {task.description && <p className="text-sm text-slate-400">{task.description}</p>}
+            {task.description && <p className="text-sm text-slate-500">{task.description}</p>}
 
             <div className="flex items-center gap-4">
               <div className="flex-1">
@@ -164,7 +173,7 @@ function MyTaskCard({ task, loading, onUpdate, onNoteUpdate }) {
             </select>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-500">Progress:</span>
+              <span className="text-xs text-slate-400 font-medium">Progress:</span>
               <input
                 type="number" min="0" max="100"
                 className="input w-16 text-xs py-1 text-center font-mono"
@@ -172,21 +181,24 @@ function MyTaskCard({ task, loading, onUpdate, onNoteUpdate }) {
                 onChange={e => onUpdate(task, 'progress', parseInt(e.target.value) || 0)}
                 disabled={loading}
               />
-              <span className="text-xs text-slate-500">%</span>
+              <span className="text-xs text-slate-400">%</span>
             </div>
 
             <button
               onClick={() => setExpanded(e => !e)}
-              className="text-xs text-brand-400 hover:text-brand-300 transition-colors"
+              className="text-xs text-brand-600 hover:text-brand-700 transition-colors font-semibold"
             >
               {expanded ? '▲ Less' : '▼ Notes'}
             </button>
           </div>
         </div>
 
-        {/* Notes section */}
         {expanded && (
-          <div className="mt-4 pt-4 border-t border-slate-800 animate-fade-in">
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="mt-4 pt-4 border-t border-slate-100"
+          >
             <label className="label">Task Notes</label>
             <textarea
               className="input resize-none h-20 mt-1"
@@ -199,7 +211,7 @@ function MyTaskCard({ task, loading, onUpdate, onNoteUpdate }) {
                 {savingNote ? 'Saving...' : '💾 Save Notes'}
               </button>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

@@ -9,7 +9,7 @@ dotenv.config();
 const { Pool } = pg;
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
-const hash = await bcrypt.hash('password123', 10);
+const hash = await bcrypt.hash('admin123', 10);
 await pool.query('UPDATE users SET password = $1', [hash]);
-console.log('✅ All user passwords reset to: password123');
+console.log('✅ All user passwords reset to: admin123');
 await pool.end();

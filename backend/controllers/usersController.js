@@ -5,6 +5,7 @@ export const getAllUsers = async (req, res, next) => {
   try {
     const { rows } = await queryWithRetry(
       `SELECT id, name, email, role, avatar, is_active, created_at,
+        phone, department, employee_id, location, bio,
         (SELECT COUNT(*) FROM tasks WHERE assigned_to = users.id) as task_count,
         (SELECT COUNT(*) FROM projects WHERE manager_id = users.id) as project_count
        FROM users ORDER BY created_at DESC`
@@ -16,7 +17,7 @@ export const getAllUsers = async (req, res, next) => {
 export const getUserById = async (req, res, next) => {
   try {
     const { rows } = await queryWithRetry(
-      `SELECT id, name, email, role, avatar, is_active, created_at FROM users WHERE id = $1`,
+      `SELECT id, name, email, role, avatar, is_active, created_at, phone, department, employee_id, location, bio FROM users WHERE id = $1`,
       [req.params.id]
     );
     if (!rows[0]) return res.status(404).json({ error: 'User not found' });
@@ -26,14 +27,13 @@ export const getUserById = async (req, res, next) => {
 
 export const createUser = async (req, res, next) => {
   try {
-    const { name, email, password, role = 'worker', avatar = '👷' } = req.body;
+    const { name, email, password, role = 'worker', avatar = '👷', phone, department, employee_id, location, bio } = req.body;
     if (!name || !email || !password)
       return res.status(400).json({ error: 'Name, email and password are required' });
 
     if (password.length < 6)
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
 
-    // ── Duplicate email check ──────────────────────────────────────────────
     const { rows: existing } = await queryWithRetry(
       'SELECT id FROM users WHERE email = $1',
       [email.toLowerCase().trim()]
@@ -44,10 +44,10 @@ export const createUser = async (req, res, next) => {
 
     const hashed = await bcrypt.hash(password, 10);
     const { rows } = await queryWithRetry(
-      `INSERT INTO users (name, email, password, role, avatar)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, name, email, role, avatar, is_active, created_at`,
-      [name.trim(), email.toLowerCase().trim(), hashed, role, avatar]
+      `INSERT INTO users (name, email, password, role, avatar, phone, department, employee_id, location, bio)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       RETURNING id, name, email, role, avatar, is_active, created_at, phone, department, employee_id, location, bio`,
+      [name.trim(), email.toLowerCase().trim(), hashed, role, avatar, phone || null, department || null, employee_id || null, location || null, bio || null]
     );
     res.status(201).json(rows[0]);
   } catch (err) {
@@ -60,9 +60,8 @@ export const createUser = async (req, res, next) => {
 
 export const updateUser = async (req, res, next) => {
   try {
-    const { name, email, role, avatar, is_active } = req.body;
+    const { name, email, role, avatar, is_active, phone, department, employee_id, location, bio } = req.body;
 
-    // ── If email is being changed, check it's not taken by someone else ───
     if (email) {
       const { rows: existing } = await queryWithRetry(
         'SELECT id FROM users WHERE email = $1 AND id != $2',
@@ -75,15 +74,20 @@ export const updateUser = async (req, res, next) => {
 
     const { rows } = await queryWithRetry(
       `UPDATE users SET
-        name      = COALESCE($1, name),
-        email     = COALESCE($2, email),
-        role      = COALESCE($3, role),
-        avatar    = COALESCE($4, avatar),
-        is_active = COALESCE($5, is_active),
+        name       = COALESCE($1, name),
+        email      = COALESCE($2, email),
+        role       = COALESCE($3, role),
+        avatar     = COALESCE($4, avatar),
+        is_active  = COALESCE($5, is_active),
+        phone      = COALESCE($6, phone),
+        department = COALESCE($7, department),
+        employee_id = COALESCE($8, employee_id),
+        location   = COALESCE($9, location),
+        bio        = COALESCE($10, bio),
         updated_at = NOW()
-       WHERE id = $6
-       RETURNING id, name, email, role, avatar, is_active, created_at`,
-      [name, email ? email.toLowerCase().trim() : null, role, avatar, is_active, req.params.id]
+       WHERE id = $11
+       RETURNING id, name, email, role, avatar, is_active, created_at, phone, department, employee_id, location, bio`,
+      [name, email ? email.toLowerCase().trim() : null, role, avatar, is_active, phone || null, department || null, employee_id || null, location || null, bio || null, req.params.id]
     );
     if (!rows[0]) return res.status(404).json({ error: 'User not found' });
     res.json(rows[0]);

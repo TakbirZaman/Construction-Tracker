@@ -12,7 +12,7 @@ export const authenticate = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const { rows } = await queryWithRetry(
-      'SELECT id, name, email, role, avatar, is_active FROM users WHERE id = $1',
+      'SELECT id, name, email, role, avatar, is_active, phone, department, employee_id, location, bio FROM users WHERE id = $1',
       [decoded.userId]
     );
 

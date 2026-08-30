@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { projectsAPI, usersAPI } from '../../api/index.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import PageHeader from '../../components/layout/PageHeader.jsx';
@@ -8,6 +10,9 @@ import { formatCurrency, formatDate } from '../../utils/helpers.js';
 
 const STATUS_OPTIONS = ['planning', 'active', 'completed', 'on_hold'];
 const EMPTY_FORM = { name: '', description: '', status: 'planning', budget: '', start_date: '', end_date: '', location: '', manager_id: '' };
+
+const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.06 } } };
+const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 
 export default function Projects() {
   const { canManage, isAdmin, user } = useAuth();
@@ -54,8 +59,13 @@ export default function Projects() {
     if (!form.name.trim()) return setError('Project name is required');
     setSaving(true); setError('');
     try {
-      if (editProject) await projectsAPI.update(editProject.id, form);
-      else await projectsAPI.create(form);
+      if (editProject) {
+        await projectsAPI.update(editProject.id, form);
+        toast.success('Project updated!');
+      } else {
+        await projectsAPI.create(form);
+        toast.success('Project created!');
+      }
       setModalOpen(false);
       load();
     } catch (err) {
@@ -67,9 +77,10 @@ export default function Projects() {
     try {
       await projectsAPI.delete(deleteId);
       setDeleteId(null);
+      toast.success('Project deleted');
       load();
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to delete');
+      toast.error(err.response?.data?.error || 'Failed to delete');
     }
   };
 
@@ -84,7 +95,7 @@ export default function Projects() {
         title="Projects"
         subtitle={`${projects.length} total projects`}
         actions={
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <input className="input w-52" placeholder="Search projects..." value={filter} onChange={e => setFilter(e.target.value)} />
             <select className="select w-36" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
               <option value="">All Status</option>
@@ -95,22 +106,22 @@ export default function Projects() {
         }
       />
 
-      <div className="p-8">
+      <div className="p-4 sm:p-8">
         {loading ? (
           <div className="flex justify-center py-20"><Spinner size="lg" /></div>
         ) : filtered.length === 0 ? (
           <EmptyState icon="🏗️" title="No projects found" description="Create your first project to get started"
             action={canManage && <button className="btn-primary" onClick={openCreate}>＋ Create Project</button>} />
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+          <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
             {filtered.map(p => (
-              <div key={p.id} className="card-hover p-5 flex flex-col gap-4 animate-fade-in group">
+              <motion.div key={p.id} variants={item} className="card-hover p-5 flex flex-col gap-4 group">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <Link to={`/projects/${p.id}`} className="font-semibold text-slate-200 hover:text-white text-base leading-tight line-clamp-2 block">
+                    <Link to={`/projects/${p.id}`} className="font-bold text-slate-800 hover:text-brand-600 text-base leading-tight line-clamp-2 block transition-colors">
                       {p.name}
                     </Link>
-                    {p.location && <div className="text-xs text-slate-500 mt-1">📍 {p.location}</div>}
+                    {p.location && <div className="text-xs text-slate-400 mt-1.5 font-medium">📍 {p.location}</div>}
                   </div>
                   <StatusBadge status={p.status} />
                 </div>
@@ -118,7 +129,7 @@ export default function Projects() {
                 {p.description && <p className="text-sm text-slate-500 line-clamp-2">{p.description}</p>}
 
                 <div>
-                  <div className="flex justify-between text-xs text-slate-500 mb-1">
+                  <div className="flex justify-between text-xs text-slate-400 mb-1.5 font-medium">
                     <span>Progress</span>
                     <span>{p.completed_tasks}/{p.total_tasks} tasks</span>
                   </div>
@@ -126,42 +137,41 @@ export default function Projects() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="bg-slate-800/50 rounded-lg p-2.5">
-                    <div className="text-xs text-slate-500 mb-0.5">Budget</div>
-                    <div className="font-mono text-slate-200 font-medium">{formatCurrency(p.budget, true)}</div>
+                  <div className="bg-brand-50/50 rounded-xl p-3 border border-brand-100/50">
+                    <div className="text-xs text-slate-400 mb-0.5 font-medium">Budget</div>
+                    <div className="font-mono text-slate-700 font-bold">{formatCurrency(p.budget, true)}</div>
                   </div>
-                  <div className="bg-slate-800/50 rounded-lg p-2.5">
-                    <div className="text-xs text-slate-500 mb-0.5">Spent</div>
-                    <div className={`font-mono font-medium ${parseFloat(p.total_actual_cost) > parseFloat(p.budget) ? 'text-red-400' : 'text-slate-200'}`}>
+                  <div className={`rounded-xl p-3 border ${parseFloat(p.total_actual_cost) > parseFloat(p.budget) ? 'bg-rose-50 border-rose-200' : 'bg-emerald-50 border-emerald-100'}`}>
+                    <div className="text-xs text-slate-400 mb-0.5 font-medium">Spent</div>
+                    <div className={`font-mono font-bold ${parseFloat(p.total_actual_cost) > parseFloat(p.budget) ? 'text-rose-600' : 'text-slate-700'}`}>
                       {formatCurrency(p.total_actual_cost, true)}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 border-t border-slate-800">
-                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                  <div className="flex items-center gap-2 text-xs text-slate-400">
                     {p.manager_avatar && <span>{p.manager_avatar}</span>}
-                    <span>{p.manager_name || 'Unassigned'}</span>
+                    <span className="font-medium">{p.manager_name || 'Unassigned'}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Link to={`/projects/${p.id}`} className="text-xs text-brand-400 hover:text-brand-300 px-2 py-1 rounded hover:bg-brand-500/10 transition-colors">
+                    <Link to={`/projects/${p.id}`} className="text-xs text-brand-600 hover:text-brand-700 font-semibold px-2 py-1 rounded-lg hover:bg-brand-50 transition-all">
                       View →
                     </Link>
                     {canManage && (
                       <>
-                        <button onClick={() => openEdit(p)} className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded hover:bg-slate-800 transition-colors">Edit</button>
-                        {isAdmin && <button onClick={() => setDeleteId(p.id)} className="text-xs text-red-400 hover:text-red-300 px-2 py-1 rounded hover:bg-red-500/10 transition-colors">Del</button>}
+                        <button onClick={() => openEdit(p)} className="text-xs text-slate-400 hover:text-slate-700 px-2 py-1 rounded-lg hover:bg-slate-100 transition-all font-medium">Edit</button>
+                        {isAdmin && <button onClick={() => setDeleteId(p.id)} className="text-xs text-rose-500 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 transition-all font-medium">Del</button>}
                       </>
                     )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
 
-      {/* Create/Edit Modal */}
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editProject ? 'Edit Project' : 'New Project'} size="lg">
         {error && <Alert type="error" message={error} className="mb-4" />}
         <div className="grid grid-cols-2 gap-4">
@@ -203,7 +213,7 @@ export default function Projects() {
             </FormField>
           </div>
         </div>
-        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-800">
+        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
           <button className="btn-secondary" onClick={() => setModalOpen(false)}>Cancel</button>
           <button className="btn-primary" onClick={handleSave} disabled={saving}>
             {saving ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</> : (editProject ? '✓ Update Project' : '＋ Create Project')}

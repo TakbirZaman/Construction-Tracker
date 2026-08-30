@@ -1,12 +1,36 @@
+require('dotenv').config();
 const pg = require('pg');
+const fs = require('fs');
+const path = require('path');
+
 const pool = new pg.Pool({
-  connectionString: 'postgresql://todo_app_nr3k_user:MQoEbP97Irh60OJfF1HdLsMgKvdplLnm@dpg-d8vc43ugvqtc73c2ov70-a.oregon-postgres.render.com:5432/postgres',
-  ssl: { rejectUnauthorized: false },
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
-pool.query("SELECT 1 FROM pg_database WHERE datname='constructtrack'").then(r => {
-  if (r.rows.length === 0) {
-    return pool.query('CREATE DATABASE constructtrack').then(() => console.log('Created constructtrack DB'));
-  } else {
-    console.log('constructtrack DB already exists');
+
+async function runMigrations() {
+  try {
+    console.log('🔄 Checking database connection...');
+    await pool.query('SELECT 1');
+    console.log('✅ Connected to database');
+
+    console.log('🔄 Running migrations...');
+    const schemaPath = path.join(__dirname, '../schema.sql');
+    const schema = fs.readFileSync(schemaPath, 'utf8');
+    
+    // Split by semicolon and execute each statement
+    const statements = schema.split(';').filter(s => s.trim());
+    for (const statement of statements) {
+      await pool.query(statement);
+    }
+    
+    console.log('✅ Database schema created successfully');
+  } catch (e) {
+    console.error('❌ Migration failed:', e.message);
+    process.exit(1);
+  } finally {
+    await pool.end();
   }
-}).then(() => pool.end()).catch(e => { console.error(e.message); process.exit(1); });
+}
+
+runMigrations();
