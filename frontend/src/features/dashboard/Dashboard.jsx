@@ -87,10 +87,10 @@ export default function Dashboard() {
         {/* Task Status Row */}
         <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
-            { label: 'Pending', value: data?.tasks.pending || 0, color: 'text-slate-600', bg: 'bg-slate-50 border border-slate-200', icon: '⏳' },
-            { label: 'In Progress', value: data?.tasks.in_progress || 0, color: 'text-instagram-purple', bg: 'bg-purple-50 border border-purple-200', icon: '🔄' },
-            { label: 'Completed', value: data?.tasks.completed || 0, color: 'text-emerald-600', bg: 'bg-emerald-50 border border-emerald-200', icon: '✅' },
-            { label: 'Blocked', value: data?.tasks.blocked || 0, color: 'text-rose-600', bg: 'bg-rose-50 border border-rose-200', icon: '🚫' },
+            { label: 'Pending', value: data?.tasks.pending || 0, color: 'text-slate-400', bg: 'bg-slate-800/60 border border-slate-700/50', icon: '⏳' },
+            { label: 'In Progress', value: data?.tasks.in_progress || 0, color: 'text-instagram-purple', bg: 'bg-purple-900/30 border border-purple-800/40', icon: '🔄' },
+            { label: 'Completed', value: data?.tasks.completed || 0, color: 'text-emerald-400', bg: 'bg-emerald-900/30 border border-emerald-800/40', icon: '✅' },
+            { label: 'Blocked', value: data?.tasks.blocked || 0, color: 'text-rose-400', bg: 'bg-rose-900/30 border border-rose-800/40', icon: '🚫' },
           ].map(s => (
             <motion.div key={s.label} variants={item} className={`p-4 rounded-xl flex items-center gap-4 ${s.bg} hover:shadow-md transition-all duration-300`}>
               <span className="text-2xl">{s.icon}</span>
@@ -111,18 +111,18 @@ export default function Dashboard() {
             transition={{ delay: 0.3 }}
             className="lg:col-span-2 card p-6"
           >
-            <h3 className="text-sm font-bold text-slate-700 mb-1 uppercase tracking-wider">Budget vs Actual (000s)</h3>
-            <p className="text-xs text-slate-400 mb-6">Cost breakdown by category</p>
+            <h3 className="text-sm font-bold text-slate-300 mb-1 uppercase tracking-wider">Budget vs Actual (000s)</h3>
+            <p className="text-xs text-slate-500 mb-6">Cost breakdown by category</p>
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={budgetChartData} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-                <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `৳${v}K`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `৳${v}K`} />
                 <Tooltip
-                  contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
+                  contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, fontSize: 12, color: '#e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
                   formatter={(v, name) => [`৳${(v * 1000).toLocaleString()}`, name]}
                 />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Legend wrapperStyle={{ fontSize: 12, color: '#94a3b8' }} />
                 <Bar dataKey="Planned" fill="#c4b5fd" radius={[6, 6, 0, 0]} />
                 <Bar dataKey="Actual" fill="#E1306C" radius={[6, 6, 0, 0]} />
               </BarChart>
@@ -136,8 +136,8 @@ export default function Dashboard() {
             transition={{ delay: 0.4 }}
             className="card p-6"
           >
-            <h3 className="text-sm font-bold text-slate-700 mb-1 uppercase tracking-wider">Project Status</h3>
-            <p className="text-xs text-slate-400 mb-4">Distribution overview</p>
+            <h3 className="text-sm font-bold text-slate-300 mb-1 uppercase tracking-wider">Project Status</h3>
+            <p className="text-xs text-slate-500 mb-4">Distribution overview</p>
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie data={projectStatusData} cx="50%" cy="50%" innerRadius={55} outerRadius={80}
@@ -146,7 +146,7 @@ export default function Dashboard() {
                     <Cell key={i} fill={entry.color} stroke="transparent" />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }} />
+                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, fontSize: 12, color: '#e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }} />
               </PieChart>
             </ResponsiveContainer>
             <div className="flex flex-col gap-2.5 mt-2">
@@ -154,9 +154,9 @@ export default function Dashboard() {
                 <div key={item.name} className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2.5">
                     <div className="w-3 h-3 rounded-full" style={{ background: item.color }} />
-                    <span className="text-slate-500 font-medium">{item.name}</span>
+                    <span className="text-slate-400 font-medium">{item.name}</span>
                   </div>
-                  <span className="font-mono font-semibold text-slate-700">{item.value}</span>
+                  <span className="font-mono font-semibold text-slate-300">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -173,14 +173,14 @@ export default function Dashboard() {
             className="card p-6"
           >
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Project Progress</h3>
-              <Link to="/projects" className="text-xs text-brand-600 hover:text-brand-700 font-semibold">View all →</Link>
+              <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Project Progress</h3>
+              <Link to="/projects" className="text-xs text-brand-400 hover:text-brand-300 font-semibold">View all →</Link>
             </div>
             <div className="flex flex-col gap-4">
               {data?.projectProgress?.map(p => (
                 <div key={p.id} className="group">
                   <div className="flex items-center justify-between mb-1.5">
-                    <Link to={`/projects/${p.id}`} className="text-sm text-slate-600 hover:text-brand-600 font-semibold truncate max-w-[200px]">{p.name}</Link>
+                    <Link to={`/projects/${p.id}`} className="text-sm text-slate-300 hover:text-brand-400 font-semibold truncate max-w-[200px]">{p.name}</Link>
                     <StatusBadge status={p.status} />
                   </div>
                   <ProgressBar value={p.progress} />
@@ -196,16 +196,16 @@ export default function Dashboard() {
             transition={{ delay: 0.6 }}
             className="card p-6"
           >
-            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-5">Recent Activity</h3>
+            <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-5">Recent Activity</h3>
             <div className="flex flex-col gap-3">
               {data?.recentTasks?.map(task => (
-                <div key={task.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center text-sm flex-shrink-0 border border-white shadow-sm">
+                <div key={task.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-700/40 transition-colors">
+                  <div className="w-8 h-8 bg-gradient-to-br from-brand-500/20 to-instagram-orange/15 rounded-full flex items-center justify-center text-sm flex-shrink-0 border border-slate-700 shadow-sm">
                     {task.assignee_avatar || '👤'}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm text-slate-700 font-semibold truncate">{task.title}</div>
-                    <div className="text-xs text-slate-400 mt-0.5">{task.project_name}</div>
+                    <div className="text-sm text-slate-200 font-semibold truncate">{task.title}</div>
+                    <div className="text-xs text-slate-500 mt-0.5">{task.project_name}</div>
                   </div>
                   <div className="flex flex-col items-end gap-1 flex-shrink-0">
                     <StatusBadge status={task.status} />

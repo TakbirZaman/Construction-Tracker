@@ -20,8 +20,8 @@ export default class ErrorBoundary extends React.Component {
         <div className="flex items-center justify-center h-screen p-8" style={{ background: 'linear-gradient(135deg, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)' }}>
           <div className="max-w-md text-center">
             <div className="text-6xl mb-5">💥</div>
-            <h1 className="text-2xl font-bold text-slate-800 mb-2">Something went wrong</h1>
-            <p className="text-slate-500 text-sm mb-6">
+            <h1 className="text-2xl font-bold text-white mb-2">Something went wrong</h1>
+            <p className="text-white/70 text-sm mb-6">
               {this.state.error?.message || 'An unexpected error occurred'}
             </p>
             <button

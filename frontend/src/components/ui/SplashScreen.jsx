@@ -86,21 +86,21 @@ export default function SplashScreen({ onDone }) {
           className="w-full flex flex-col gap-3"
         >
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-brand-500 rounded-full animate-pulse" />
-            <span className="text-sm text-slate-500 font-mono tracking-wide">
+            <div className="w-2 h-2 bg-brand-400 rounded-full animate-pulse" />
+            <span className="text-sm text-white/70 font-mono tracking-wide">
               {STEPS[stepIndex]?.label}
             </span>
           </div>
 
-          <div className="w-full h-1 bg-slate-200 rounded-full overflow-hidden">
+          <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-brand-500 via-violet-500 to-emerald-500 rounded-full"
+              className="h-full bg-gradient-to-r from-instagram-purple via-brand-400 to-instagram-orange rounded-full"
               style={{ width: `${progress}%` }}
               transition={{ duration: 0.1 }}
             />
           </div>
 
-          <div className="flex justify-between text-xs text-slate-400 font-mono">
+          <div className="flex justify-between text-xs text-white/50 font-mono">
             <span>v1.0.0</span>
             <span>{Math.round(progress)}%</span>
           </div>

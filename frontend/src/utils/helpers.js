@@ -24,20 +24,20 @@ export const formatRelative = (date) => {
 };
 
 export const statusConfig = {
-  planning:    { label: 'Planning',    color: 'bg-blue-50 text-blue-700 border border-blue-200', dot: 'bg-blue-500' },
-  active:      { label: 'Active',      color: 'bg-emerald-50 text-emerald-700 border border-emerald-200', dot: 'bg-emerald-500' },
-  completed:   { label: 'Completed',   color: 'bg-slate-100 text-slate-600 border border-slate-200', dot: 'bg-slate-400' },
-  on_hold:     { label: 'On Hold',     color: 'bg-amber-50 text-amber-700 border border-amber-200', dot: 'bg-amber-500' },
-  pending:     { label: 'Pending',     color: 'bg-slate-50 text-slate-600 border border-slate-200', dot: 'bg-slate-400' },
-  in_progress: { label: 'In Progress', color: 'bg-purple-50 text-purple-700 border border-purple-200', dot: 'bg-purple-500' },
-  blocked:     { label: 'Blocked',     color: 'bg-rose-50 text-rose-700 border border-rose-200', dot: 'bg-rose-500' },
+  planning:    { label: 'Planning',    color: 'bg-blue-900/30 text-blue-400 border border-blue-800/40', dot: 'bg-blue-400' },
+  active:      { label: 'Active',      color: 'bg-emerald-900/30 text-emerald-400 border border-emerald-800/40', dot: 'bg-emerald-400' },
+  completed:   { label: 'Completed',   color: 'bg-slate-700/50 text-slate-400 border border-slate-600/50', dot: 'bg-slate-400' },
+  on_hold:     { label: 'On Hold',     color: 'bg-amber-900/30 text-amber-400 border border-amber-800/40', dot: 'bg-amber-400' },
+  pending:     { label: 'Pending',     color: 'bg-slate-700/50 text-slate-400 border border-slate-600/50', dot: 'bg-slate-500' },
+  in_progress: { label: 'In Progress', color: 'bg-purple-900/30 text-purple-400 border border-purple-800/40', dot: 'bg-purple-400' },
+  blocked:     { label: 'Blocked',     color: 'bg-rose-900/30 text-rose-400 border border-rose-800/40', dot: 'bg-rose-400' },
 };
 
 export const priorityConfig = {
-  low:      { label: 'Low',      color: 'bg-slate-50 text-slate-600 border border-slate-200' },
-  medium:   { label: 'Medium',   color: 'bg-amber-50 text-amber-700 border border-amber-200' },
-  high:     { label: 'High',     color: 'bg-orange-50 text-orange-700 border border-orange-200' },
-  critical: { label: 'Critical', color: 'bg-rose-50 text-rose-700 border border-rose-200' },
+  low:      { label: 'Low',      color: 'bg-slate-700/50 text-slate-400 border border-slate-600/50' },
+  medium:   { label: 'Medium',   color: 'bg-amber-900/30 text-amber-400 border border-amber-800/40' },
+  high:     { label: 'High',     color: 'bg-orange-900/30 text-orange-400 border border-orange-800/40' },
+  critical: { label: 'Critical', color: 'bg-rose-900/30 text-rose-400 border border-rose-800/40' },
 };
 
 export const categoryConfig = {
@@ -63,13 +63,13 @@ export const getProgressGradient = (progress) => {
 };
 
 export const departmentConfig = {
-  engineering:  { label: 'Engineering',  color: 'bg-purple-50 text-purple-700 border border-purple-200', icon: '🔧' },
-  procurement:  { label: 'Procurement',  color: 'bg-pink-50 text-pink-700 border border-pink-200', icon: '📦' },
-  site_ops:     { label: 'Site Ops',     color: 'bg-emerald-50 text-emerald-700 border border-emerald-200', icon: '🏗️' },
-  finance:      { label: 'Finance',      color: 'bg-orange-50 text-orange-700 border border-orange-200', icon: '💰' },
-  hr:           { label: 'HR',           color: 'bg-rose-50 text-rose-700 border border-rose-200', icon: '👥' },
-  safety:       { label: 'Safety',       color: 'bg-amber-50 text-amber-700 border border-amber-200', icon: '🛡️' },
-  design:       { label: 'Design',       color: 'bg-violet-50 text-violet-700 border border-violet-200', icon: '📐' },
+  engineering:  { label: 'Engineering',  color: 'bg-purple-900/30 text-purple-400 border border-purple-800/40', icon: '🔧' },
+  procurement:  { label: 'Procurement',  color: 'bg-pink-900/30 text-pink-400 border border-pink-800/40', icon: '📦' },
+  site_ops:     { label: 'Site Ops',     color: 'bg-emerald-900/30 text-emerald-400 border border-emerald-800/40', icon: '🏗️' },
+  finance:      { label: 'Finance',      color: 'bg-orange-900/30 text-orange-400 border border-orange-800/40', icon: '💰' },
+  hr:           { label: 'HR',           color: 'bg-rose-900/30 text-rose-400 border border-rose-800/40', icon: '👥' },
+  safety:       { label: 'Safety',       color: 'bg-amber-900/30 text-amber-400 border border-amber-800/40', icon: '🛡️' },
+  design:       { label: 'Design',       color: 'bg-violet-900/30 text-violet-400 border border-violet-800/40', icon: '📐' },
 };
 
 export const cn = (...classes) => classes.filter(Boolean).join(' ');

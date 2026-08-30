@@ -14,9 +14,9 @@ const DEPARTMENTS = ['engineering', 'procurement', 'site_ops', 'finance', 'hr', 
 const EMPTY_FORM = { name: '', email: '', password: '', role: 'worker', avatar: '👷', phone: '', department: '', employee_id: '', location: '' };
 
 const ROLE_COLORS = {
-  admin: 'bg-purple-50 text-purple-700 border border-purple-200',
-  manager: 'bg-brand-50 text-brand-700 border border-brand-200',
-  worker: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  admin: 'bg-purple-900/30 text-purple-400 border border-purple-800/40',
+  manager: 'bg-brand-900/30 text-brand-400 border border-brand-800/40',
+  worker: 'bg-emerald-900/30 text-emerald-400 border border-emerald-800/40',
 };
 
 const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.03 } } };
