@@ -136,8 +136,8 @@ export default function BudgetTab({ projectId, projectBudget }) {
               <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `৳${v}K`} />
               <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
                 formatter={(v, name) => [`৳${(v * 1000).toLocaleString()}`, name]} />
-              <Bar dataKey="Planned" fill="#93c5fd" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="Actual" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="Planned" fill="#c4b5fd" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="Actual" fill="#E1306C" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

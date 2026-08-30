@@ -48,13 +48,14 @@ export default function SplashScreen({ onDone }) {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] bg-gradient-to-br from-slate-50 via-brand-50/30 to-violet-50/20 flex flex-col items-center justify-center transition-opacity duration-500 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
+      style={{ background: 'linear-gradient(135deg, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)' }}
     >
       {/* Floating shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-brand-200/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-violet-200/15 rounded-full blur-3xl animate-float" style={{ animationDelay: '-3s' }} />
-        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-emerald-200/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '-1.5s' }} />
+        <div className="absolute top-20 left-20 w-72 h-72 bg-instagram-purple/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-instagram-orange/15 rounded-full blur-3xl animate-float" style={{ animationDelay: '-3s' }} />
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '-1.5s' }} />
       </div>
 
       <div className="relative flex flex-col items-center gap-10 w-80">
@@ -67,7 +68,7 @@ export default function SplashScreen({ onDone }) {
         >
           <div className="relative">
             <div className="absolute inset-0 bg-brand-400/20 rounded-3xl blur-2xl scale-150 animate-pulse-slow" />
-            <div className="relative w-20 h-20 bg-gradient-to-br from-brand-500 to-brand-700 rounded-3xl flex items-center justify-center shadow-glow-blue">
+            <div className="relative w-20 h-20 bg-instagram-gradient rounded-3xl flex items-center justify-center shadow-glow-brand">
               <span className="text-white font-bold text-2xl font-display">CT</span>
             </div>
           </div>

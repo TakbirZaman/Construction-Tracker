@@ -39,7 +39,7 @@ export default function Layout({ children }) {
       `}>
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-100 dark:border-slate-700/50 min-h-[73px]">
-          <div className="w-9 h-9 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center flex-shrink-0 shadow-glow-blue">
+          <div className="w-9 h-9 bg-instagram-gradient rounded-xl flex items-center justify-center flex-shrink-0 shadow-glow-brand">
             <span className="text-white font-bold text-sm">CT</span>
           </div>
           {!collapsed && (
@@ -96,7 +96,7 @@ export default function Layout({ children }) {
 
           {/* User info */}
           <div className={`flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 ${collapsed ? 'justify-center' : ''}`}>
-            <div className="w-9 h-9 bg-gradient-to-br from-brand-100 to-brand-200 dark:from-brand-500/20 dark:to-brand-600/20 rounded-full flex items-center justify-center text-base flex-shrink-0 border-2 border-white dark:border-slate-700 shadow-sm">
+            <div className="w-9 h-9 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-brand-500/20 dark:to-brand-600/20 rounded-full flex items-center justify-center text-base flex-shrink-0 border-2 border-white dark:border-slate-700 shadow-sm">
               {user?.avatar}
             </div>
             {!collapsed && (
@@ -130,7 +130,7 @@ export default function Layout({ children }) {
             ☰
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-gradient-to-br from-brand-500 to-brand-700 rounded-lg flex items-center justify-center">
+            <div className="w-7 h-7 bg-instagram-gradient rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xs">CT</span>
             </div>
             <span className="font-display font-bold text-sm text-slate-800 dark:text-white uppercase">ConstructTrack</span>

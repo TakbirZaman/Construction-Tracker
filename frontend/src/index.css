@@ -31,7 +31,7 @@
 
   /* ─── Buttons ───────────────────────────────────────────────── */
   .btn-primary {
-    @apply bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-medium px-4 py-2.5 rounded-xl shadow-colored hover:shadow-glow-blue transition-all duration-300 flex items-center gap-2 text-sm active:scale-[0.97];
+    @apply bg-gradient-to-r from-instagram-purple via-brand-500 to-instagram-orange hover:from-instagram-purple hover:via-brand-600 hover:to-instagram-orange text-white font-medium px-4 py-2.5 rounded-xl shadow-colored hover:shadow-glow-brand transition-all duration-300 flex items-center gap-2 text-sm active:scale-[0.97];
   }
   .btn-secondary {
     @apply bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2.5 rounded-xl border border-slate-200 transition-all duration-300 flex items-center gap-2 text-sm active:scale-[0.97];
@@ -96,20 +96,20 @@
   }
 
   /* ─── Gradient Backgrounds ──────────────────────────────────── */
-  .gradient-blue {
-    @apply bg-gradient-to-br from-brand-50 to-brand-100/50;
+  .gradient-purple {
+    @apply bg-gradient-to-br from-purple-50 to-pink-50;
+  }
+  .gradient-pink {
+    @apply bg-gradient-to-br from-pink-50 to-rose-50;
+  }
+  .gradient-orange {
+    @apply bg-gradient-to-br from-orange-50 to-amber-50;
   }
   .gradient-emerald {
     @apply bg-gradient-to-br from-emerald-50 to-emerald-100/50;
   }
-  .gradient-violet {
-    @apply bg-gradient-to-br from-violet-50 to-violet-100/50;
-  }
-  .gradient-amber {
-    @apply bg-gradient-to-br from-amber-50 to-amber-100/50;
-  }
-  .gradient-rose {
-    @apply bg-gradient-to-br from-rose-50 to-rose-100/50;
+  .gradient-brand {
+    @apply bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50;
   }
 
   /* ─── Skeleton Loader ───────────────────────────────────────── */
@@ -127,32 +127,13 @@
   .dark .glass {
     @apply bg-slate-900/80 border-slate-700/30;
   }
-
-  /* ─── Animated Gradient Border ──────────────────────────────── */
-  .gradient-border {
-    position: relative;
-    @apply rounded-xl;
-  }
-  .gradient-border::before {
-    content: '';
-    @apply absolute inset-0 rounded-xl p-[1px];
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #10b981, #f59e0b);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  .gradient-border:focus-within::before {
-    opacity: 1;
-  }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-600 via-violet-500 to-emerald-500;
+    @apply bg-clip-text text-transparent bg-instagram-gradient;
   }
   .text-gradient-brand {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-500 to-brand-700;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-instagram-purple via-brand-500 to-instagram-orange;
   }
 }

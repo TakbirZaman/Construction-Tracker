@@ -17,7 +17,7 @@ export default class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex items-center justify-center h-screen bg-gradient-to-br from-slate-50 via-brand-50/20 to-violet-50/10 p-8">
+        <div className="flex items-center justify-center h-screen p-8" style={{ background: 'linear-gradient(135deg, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)' }}>
           <div className="max-w-md text-center">
             <div className="text-6xl mb-5">💥</div>
             <h1 className="text-2xl font-bold text-slate-800 mb-2">Something went wrong</h1>

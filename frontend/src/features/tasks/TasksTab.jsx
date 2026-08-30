@@ -263,7 +263,7 @@ function TaskRow({ task, workers, canManage, isWorker, userId, loading, onInline
         )}
 
         {task.assignee_avatar && (
-          <div className="w-7 h-7 bg-gradient-to-br from-brand-100 to-brand-200 rounded-full flex items-center justify-center text-sm border border-white shadow-sm" title={task.assignee_name}>
+          <div className="w-7 h-7 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center text-sm border border-white shadow-sm" title={task.assignee_name}>
             {task.assignee_avatar}
           </div>
         )}

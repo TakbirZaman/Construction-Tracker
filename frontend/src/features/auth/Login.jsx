@@ -6,10 +6,10 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { authAPI } from '../../api/index.js';
 
 const DEMO_ACCOUNTS = [
-  { email: 'takbir@constructtrack.com',   role: 'Admin',   name: 'Takbir',   avatar: '👑', password: 'admin123', color: 'from-violet-500 to-violet-700' },
+  { email: 'takbir@constructtrack.com',   role: 'Admin',   name: 'Takbir',   avatar: '👑', password: 'admin123', color: 'from-instagram-purple to-purple-700' },
   { email: 'sakib@constructtrack.com',    role: 'Admin',   name: 'Sakib',    avatar: '👨‍💻', password: 'admin123', color: 'from-brand-500 to-brand-700' },
   { email: 'opi@constructtrack.com',      role: 'Manager', name: 'Opi',      avatar: '👨‍💼', password: 'admin123', color: 'from-emerald-500 to-emerald-700' },
-  { email: 'alamain@constructtrack.com',  role: 'Manager', name: 'Alamain',  avatar: '👩‍💼', password: 'admin123', color: 'from-amber-500 to-amber-700' },
+  { email: 'alamain@constructtrack.com',  role: 'Manager', name: 'Alamain',  avatar: '👩‍💼', password: 'admin123', color: 'from-instagram-orange to-orange-600' },
   { email: 'kawshik@constructtrack.com',  role: 'Worker',  name: 'Kawshik',  avatar: '👷', password: 'admin123', color: 'from-rose-500 to-rose-700' },
 ];
 
@@ -21,16 +21,12 @@ export default function Login() {
   const { login } = useAuth();
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 via-brand-50/20 to-violet-50/10 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)' }}>
       {/* Floating background shapes */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-brand-200/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-violet-200/15 rounded-full blur-3xl animate-float" style={{ animationDelay: '-2s' }} />
-        <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-emerald-200/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '-4s' }} />
-        <div className="absolute inset-0 opacity-[0.015]" style={{
-          backgroundImage: 'linear-gradient(rgba(59,130,246,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.3) 1px, transparent 1px)',
-          backgroundSize: '40px 40px'
-        }} />
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-instagram-purple/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-instagram-orange/15 rounded-full blur-3xl animate-float" style={{ animationDelay: '-2s' }} />
+        <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '-4s' }} />
       </div>
 
       <motion.div
@@ -47,7 +43,7 @@ export default function Login() {
             transition={{ delay: 0.2, type: 'spring', bounce: 0.4 }}
             className="inline-flex items-center gap-3 mb-4"
           >
-            <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl flex items-center justify-center shadow-glow-blue">
+            <div className="w-12 h-12 bg-instagram-gradient rounded-2xl flex items-center justify-center shadow-glow-brand">
               <span className="text-white font-bold text-xl font-display">CT</span>
             </div>
             <div className="text-left">

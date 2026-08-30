@@ -165,7 +165,7 @@ async function seedData(client) {
   console.log('🌱 Seeding comprehensive demo data...');
 
   const hashedPassword = await bcrypt.hash('password123', 10);
-  const takbirPassword = await bcrypt.hash('admin123', 10);
+  const adminPassword = await bcrypt.hash('admin123', 10);
 
   // ── Users (1 admin, 3 managers, 8 workers) with rich profiles ──────────
   await client.query(`
@@ -181,16 +181,14 @@ async function seedData(client) {
     ('Sumaiya Khatun',        'sumaiya@constructtrack.com',  $1, 'worker',  '🧱', '+880 1713-200005', 'procurement','CT-205', 'Mohammadpur, Dhaka', 'Materials and inventory specialist'),
     ('Abdur Rahim',           'rahim@constructtrack.com',    $1, 'worker',  '🔨', '+880 1713-200006', 'site_ops',   'CT-206', 'Tejgaon, Dhaka',     'Masonry and finishing expert'),
     ('Shamima Yesmin',        'shamima@constructtrack.com',  $1, 'worker',  '🪚', '+880 1713-200007', 'safety',     'CT-207', 'Khilgaon, Dhaka',    'Safety officer and quality inspector'),
-    ('Jakir Hossain',         'jakir@constructtrack.com',    $1, 'worker',  '🚜', '+880 1713-200008', 'site_ops',   'CT-208', 'Uttarkhan, Dhaka',   'Earthwork and excavation specialist')
+    ('Jakir Hossain',         'jakir@constructtrack.com',    $1, 'worker',  '🚜', '+880 1713-200008', 'site_ops',   'CT-208', 'Uttarkhan, Dhaka',   'Earthwork and excavation specialist'),
+    ('Takbir',                'takbir@constructtrack.com',   $2, 'admin',   '👨‍💻', '+880 1711-000010', 'engineering', 'CT-010', 'Dhaka HQ',            'Construction technology expert and project lead'),
+    ('Sakib',                 'sakib@constructtrack.com',    $2, 'admin',   '👨‍💻', '+880 1711-000011', 'engineering', 'CT-011', 'Dhaka HQ',            'Technical lead and system administrator'),
+    ('Opi',                   'opi@constructtrack.com',      $2, 'manager', '👨‍💼', '+880 1712-100004', 'site_ops',   'CT-104', 'Dhanmondi, Dhaka',   'Site operations manager'),
+    ('Alamain',               'alamain@constructtrack.com',  $2, 'manager', '👩‍💼', '+880 1712-100005', 'procurement','CT-105', 'Banani, Dhaka',      'Procurement and supply chain manager'),
+    ('Kawshik',               'kawshik@constructtrack.com',  $2, 'worker',  '👷', '+880 1713-200009', 'site_ops',   'CT-209', 'Mirpur, Dhaka',      'Skilled construction worker and foreman')
     ON CONFLICT DO NOTHING
-  `, [hashedPassword]);
-
-  // ── Takbir (admin) ─────────────────────────────────────────────────────
-  await client.query(`
-    INSERT INTO users (name, email, password, role, avatar, phone, department, employee_id, location, bio)
-    VALUES ($1, $2, $3, 'admin', '👨‍💻', '+880 1711-000010', 'engineering', 'CT-010', 'Dhaka HQ', 'Construction technology expert and project lead')
-    ON CONFLICT DO NOTHING
-  `, ['Takbir', 'takbir@gmail.com', takbirPassword]);
+  `, [hashedPassword, adminPassword]);
 
   // ── Projects (8 total) ──────────────────────────────────────────────────
   await client.query(`
@@ -321,6 +319,7 @@ async function seedData(client) {
     (8, 'materials', 'Medical Equipment Phase 1',               2500000,       0, '2025-01-01')
   `);
 
-  console.log('✅ Demo data seeded: 12 users, 8 projects, 35 tasks, 22 materials, 28 budget entries');
-  console.log('🔑 Password for all accounts: password123');
+  console.log('✅ Demo data seeded: 17 users, 8 projects, 35 tasks, 22 materials, 28 budget entries');
+  console.log('🔑 Demo accounts use password: admin123');
+  console.log('🔑 Other seeded accounts use password: password123');
 }

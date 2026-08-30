@@ -14,7 +14,7 @@ const DEPARTMENTS = ['engineering', 'procurement', 'site_ops', 'finance', 'hr', 
 const EMPTY_FORM = { name: '', email: '', password: '', role: 'worker', avatar: '👷', phone: '', department: '', employee_id: '', location: '' };
 
 const ROLE_COLORS = {
-  admin: 'bg-violet-50 text-violet-700 border border-violet-200',
+  admin: 'bg-purple-50 text-purple-700 border border-purple-200',
   manager: 'bg-brand-50 text-brand-700 border border-brand-200',
   worker: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
 };
@@ -126,8 +126,8 @@ export default function AdminPanel() {
       <div className="grid grid-cols-2 lg:grid-cols-5 border-b border-slate-200/80 dark:border-slate-700/50 bg-white/50 dark:bg-slate-800/50">
         {[
           { label: 'Total Users', value: stats.total, color: 'text-slate-700' },
-          { label: 'Admins', value: stats.admins, color: 'text-violet-600' },
-          { label: 'Managers', value: stats.managers, color: 'text-brand-600' },
+          { label: 'Admins', value: stats.admins, color: 'text-instagram-purple' },
+          { label: 'Managers', value: stats.managers, color: 'text-brand-500' },
           { label: 'Workers', value: stats.workers, color: 'text-emerald-600' },
           { label: 'Active', value: stats.active, color: 'text-emerald-600' },
         ].map(s => (
@@ -175,7 +175,7 @@ export default function AdminPanel() {
                     <motion.tr key={u.id} variants={item} className={`table-row ${!u.is_active ? 'opacity-50' : ''}`}>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 bg-gradient-to-br from-brand-100 to-brand-200 rounded-full flex items-center justify-center text-lg border border-white shadow-sm">
+                          <div className="w-9 h-9 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center text-lg border border-white shadow-sm">
                             {u.avatar}
                           </div>
                           <div>

@@ -8,7 +8,7 @@ import PageHeader from '../../components/layout/PageHeader.jsx';
 import { StatCard, StatusBadge, PriorityBadge, ProgressBar, Spinner } from '../../components/ui/index.jsx';
 import { formatCurrency, formatRelative, categoryConfig } from '../../utils/helpers.js';
 
-const STATUS_COLORS = { planning: '#3b82f6', active: '#10b981', completed: '#94a3b8', on_hold: '#f59e0b' };
+const STATUS_COLORS = { planning: '#833AB4', active: '#10b981', completed: '#94a3b8', on_hold: '#F77737' };
 
 const container = {
   hidden: { opacity: 0 },
@@ -43,9 +43,9 @@ export default function Dashboard() {
 
   const projectStatusData = data ? [
     { name: 'Active', value: parseInt(data.projects.active), color: '#10b981' },
-    { name: 'Planning', value: parseInt(data.projects.planning), color: '#3b82f6' },
+    { name: 'Planning', value: parseInt(data.projects.planning), color: '#833AB4' },
     { name: 'Completed', value: parseInt(data.projects.completed), color: '#94a3b8' },
-    { name: 'On Hold', value: parseInt(data.projects.on_hold), color: '#f59e0b' },
+    { name: 'On Hold', value: parseInt(data.projects.on_hold), color: '#F77737' },
   ].filter(d => d.value > 0) : [];
 
   const budgetChartData = data?.budgetByCategory?.map(b => ({
@@ -66,21 +66,21 @@ export default function Dashboard() {
         {/* Top Stats */}
         <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <motion.div variants={item}>
-            <StatCard icon="🏗️" label="Total Projects" value={data?.projects.total || 0} color="text-brand-600"
-              sub={`${data?.projects.active || 0} active`} gradient="gradient-blue" />
+            <StatCard icon="🏗️" label="Total Projects" value={data?.projects.total || 0} color="text-instagram-purple"
+              sub={`${data?.projects.active || 0} active`} gradient="gradient-purple" />
           </motion.div>
           <motion.div variants={item}>
             <StatCard icon="✅" label="Total Tasks" value={data?.tasks.total || 0} color="text-emerald-600"
               sub={`${data?.tasks.completed || 0} completed`} gradient="gradient-emerald" />
           </motion.div>
           <motion.div variants={item}>
-            <StatCard icon="💰" label="Total Budget" value={formatCurrency(data?.projects.total_budget, true)} color="text-violet-600"
-              sub={`${formatCurrency(data?.budget.total_actual, true)} spent`} gradient="gradient-violet" />
+            <StatCard icon="💰" label="Total Budget" value={formatCurrency(data?.projects.total_budget, true)} color="text-instagram-orange"
+              sub={`${formatCurrency(data?.budget.total_actual, true)} spent`} gradient="gradient-orange" />
           </motion.div>
           <motion.div variants={item}>
             <StatCard icon="📈" label="Budget Variance" value={formatCurrency(Math.abs(data?.budget.variance || 0), true)}
               color={parseFloat(data?.budget.variance) >= 0 ? 'text-emerald-600' : 'text-rose-600'}
-              sub={parseFloat(data?.budget.variance) >= 0 ? 'Under budget' : 'Over budget'} gradient={parseFloat(data?.budget.variance) >= 0 ? 'gradient-emerald' : 'gradient-rose'} />
+              sub={parseFloat(data?.budget.variance) >= 0 ? 'Under budget' : 'Over budget'} gradient={parseFloat(data?.budget.variance) >= 0 ? 'gradient-emerald' : 'gradient-pink'} />
           </motion.div>
         </motion.div>
 
@@ -88,7 +88,7 @@ export default function Dashboard() {
         <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
             { label: 'Pending', value: data?.tasks.pending || 0, color: 'text-slate-600', bg: 'bg-slate-50 border border-slate-200', icon: '⏳' },
-            { label: 'In Progress', value: data?.tasks.in_progress || 0, color: 'text-brand-600', bg: 'bg-brand-50 border border-brand-200', icon: '🔄' },
+            { label: 'In Progress', value: data?.tasks.in_progress || 0, color: 'text-instagram-purple', bg: 'bg-purple-50 border border-purple-200', icon: '🔄' },
             { label: 'Completed', value: data?.tasks.completed || 0, color: 'text-emerald-600', bg: 'bg-emerald-50 border border-emerald-200', icon: '✅' },
             { label: 'Blocked', value: data?.tasks.blocked || 0, color: 'text-rose-600', bg: 'bg-rose-50 border border-rose-200', icon: '🚫' },
           ].map(s => (
@@ -123,8 +123,8 @@ export default function Dashboard() {
                   formatter={(v, name) => [`৳${(v * 1000).toLocaleString()}`, name]}
                 />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="Planned" fill="#93c5fd" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="Actual" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="Planned" fill="#c4b5fd" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="Actual" fill="#E1306C" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </motion.div>
@@ -200,7 +200,7 @@ export default function Dashboard() {
             <div className="flex flex-col gap-3">
               {data?.recentTasks?.map(task => (
                 <div key={task.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
-                  <div className="w-8 h-8 bg-gradient-to-br from-brand-100 to-brand-200 rounded-full flex items-center justify-center text-sm flex-shrink-0 border border-white shadow-sm">
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center text-sm flex-shrink-0 border border-white shadow-sm">
                     {task.assignee_avatar || '👤'}
                   </div>
                   <div className="flex-1 min-w-0">
