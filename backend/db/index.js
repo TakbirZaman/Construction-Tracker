@@ -158,7 +158,26 @@ export async function runMigrations() {
   }
 }
 
+async function ensureDemoAccounts(client) {
+  const adminPassword = await bcrypt.hash('admin123', 10);
+  await client.query(`
+    INSERT INTO users (name, email, password, role, avatar, phone, department, employee_id, location, bio) VALUES
+    ('Takbir',   'takbir@constructtrack.com',   $1, 'admin',   '👨‍💻', '+880 1711-000010', 'engineering', 'CT-010', 'Dhaka HQ',  'Construction technology expert and project lead'),
+    ('Sakib',    'sakib@constructtrack.com',    $1, 'admin',   '👨‍💻', '+880 1711-000011', 'engineering', 'CT-011', 'Dhaka HQ',  'Technical lead and system administrator'),
+    ('Opi',      'opi@constructtrack.com',      $1, 'manager', '👨‍💼', '+880 1712-100004', 'site_ops',   'CT-104', 'Dhanmondi, Dhaka',  'Site operations manager'),
+    ('Alamain',  'alamain@constructtrack.com',  $1, 'manager', '👩‍💼', '+880 1712-100005', 'procurement','CT-105', 'Banani, Dhaka',     'Procurement and supply chain manager'),
+    ('Kawshik',  'kawshik@constructtrack.com',  $1, 'worker',  '👷', '+880 1713-200009', 'site_ops',   'CT-209', 'Mirpur, Dhaka',     'Skilled construction worker and foreman')
+    ON CONFLICT (email) DO UPDATE SET
+      password = EXCLUDED.password,
+      role = EXCLUDED.role
+  `, [adminPassword]);
+  console.log('✅ Demo accounts verified/created (takbir, sakib, opi, alamain, kawshik)');
+}
+
 async function seedData(client) {
+  // Always ensure demo accounts exist (even if projects already seeded)
+  await ensureDemoAccounts(client);
+
   const { rows } = await client.query('SELECT COUNT(*) FROM projects');
   if (parseInt(rows[0].count) > 0) return;
 
