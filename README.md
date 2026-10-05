@@ -1,22 +1,24 @@
 # Construction Tracker
-A modern construction project management system designed to streamline project planning, task management, budget tracking, and team collaboration.
 
-live link - https://construction-tracker-7cy9.onrender.com/
+Built this during my internship to track real construction projects — tasks, budgets, people.
 
-### Features
+What it does:
+- Projects with tasks and progress
+- Budget vs expense tracking
+- Team assignments
+- Simple dashboard
 
-* Project management
-* Task assignment and tracking
-* Budget monitoring
-* Material management
-* Real-time updates
-* Role-based access control
+Stack: React, Node/Express, PostgreSQL + Drizzle, Render
 
-### Tech Stack
-
-* React
-* Node.js
-* Express.js
-* PostgreSQL
-
-Construction Tracker helps construction teams stay organized, improve productivity, and manage projects efficiently from start to finish.
+Run it:
+```bash
+# backend
+cd backend
+npm install
+npm run dev
+# frontend
+cd ../frontend
+npm install
+npm run dev
+```
+Live: https://construction-tracker-7cy9.onrender.com/
